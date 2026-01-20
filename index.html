@@ -1747,6 +1747,63 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
+			<script>
+// رابط ملف الجيسون الخاص بك مع رمز لمنع التخزين المؤقت (Cache)
+const DATA_URL = "https://raw.githubusercontent.com/ffrrx-2000/cinema-plas-bot/main/movies.json?v=" + Date.now();
+
+async function syncMoviesData() {
+    try {
+        const response = await fetch(DATA_URL);
+        if (!response.ok) return;
+        const movies = await response.json();
+
+        movies.forEach(movie => {
+            // البحث عن القسم المناسب بناءً على الاختيار في البوت
+            const targetContainer = document.getElementById(`list-${movie.section}`);
+            
+            if (targetContainer) {
+                const isBestSection = movie.section === 'best';
+                
+                const movieElement = isBestSection ? `
+                    <a href="go:${movie.id}" style="position: relative; display: inline-block; flex-shrink: 0;">
+                        <img height="310" src="${movie.poster}" style="border-radius: 10px; display: block;" width="200">
+                        <div style="position: absolute; bottom: -10px; left: 0; width: 100%; height: 155px; background: linear-gradient(to top, #0a0a0a 20%, transparent 100%); border-radius: 0 0 10px 10px; pointer-events: none;"></div>
+                    </a>
+                ` : `
+                    <div class="card-wrapper">
+                        <a class="card" href="go:${movie.id}">
+                            <img src="${movie.poster}" alt="${movie.title}" loading="lazy">
+                            <div class="card-overlay">
+                                <i class="fas fa-play play-icon"></i>
+                                <span class="card-desc">Cinema Plus</span>
+                            </div>
+                        </a>
+                        <div class="card-details">
+                            <h3 class="card-details-title">${movie.title}</h3>
+                            <div class="card-details-meta">
+                                <span class="year">${movie.year || ''}</span>
+                                <div class="rating">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg" alt="IMDb" style="width:30px">
+                                    <span>8.0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // إضافة الفيلم في بداية القائمة
+                targetContainer.insertAdjacentHTML('afterbegin', movieElement);
+            }
+        });
+    } catch (error) {
+        console.error("خطأ في مزامنة البيانات:", error);
+    }
+}
+
+// تنفيذ المزامنة فور تحميل الصفحة
+document.addEventListener('DOMContentLoaded', syncMoviesData);
+			</script>
+			
 <script>
 // رابط ملف البيانات من مستودعك
 const MOVIES_DATA_URL = "https://raw.githubusercontent.com/ffrrx-2000/cinema-plas-bot/main/movies.json";
@@ -1797,3 +1854,4 @@ document.addEventListener('DOMContentLoaded', syncMovies);
 
 </body>
 </html>
+
