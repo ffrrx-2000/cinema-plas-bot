@@ -1834,37 +1834,27 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 
-<!-- Dynamic movie loader (added) -->
 <script>
-const id = new URLSearchParams(window.location.search).get("id");
-let movieData = null;
-
-fetch("movies.json")
+const urlId = new URLSearchParams(window.location.search).get("id");
+fetch("https://raw.githubusercontent.com/ffrrx-2000/cinema-plas-bot/main/movies.json")
   .then(res => res.json())
   .then(movies => {
-    movieData = movies.find(m => m.id === id);
-    if (!movieData) return;
-
-    const titleEl = document.getElementById("title");
-    if (titleEl) titleEl.innerText = movieData.title;
-
-    const posterEl = document.getElementById("poster");
-    if (posterEl) posterEl.src = movieData.poster;
-
-    playServer();
+    // استخدمنا == بدلاً من === لضمان مطابقة النص مع الرقم
+    const movie = movies.find(m => m.id == urlId); 
+    if (!movie) return;
+    
+    document.title = movie.title;
+    if(document.getElementById("overview")) document.getElementById("overview").innerText = "جاري تشغيل: " + movie.title;
+    
+    // تشغيل الفيديو من Mux ID المرفوع بالبوت
+    if (Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(`https://stream.mux.com/${movie.mux}.m3u8`);
+        hls.attachMedia(document.getElementById('videoPlayer'));
+    }
   });
-
-function playServer() {
-  if (!movieData) return;
-  const player = document.getElementById("player");
-  if (!player) return;
-  player.innerHTML = `
-    <video controls autoplay>
-      <source src="https://stream.mux.com/${movieData.mux}.m3u8" type="application/x-mpegURL">
-    </video>
-  `;
-}
 </script>
 
 </body>
 </html>
+
