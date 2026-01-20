@@ -1015,7 +1015,7 @@
 
 <div class="section">
 <h3 class="section-title">افضل الأفلام لهاذ العام</h3>
-<div class="horizontal-list" id="list-best"> ```
+<div class="horizontal-list" id="list-best"> 
 
 <div style="overflow-x: auto; white-space: nowrap; padding: 10px 0;">
 <div style="display: flex; gap: 10px;">
@@ -1381,347 +1381,22 @@
 </nav>
 
 <script>
-// ===== START: NEW SLIDER JAVASCRIPT =====
-const API_KEY = "06f120992cfacd7c118f6e7086d23544";
-const FAVORITES_KEY = "favoriteMovies";
-const sliderWrapper = document.getElementById("sliderWrapper");
-const sliderSections = document.querySelectorAll(".slider-section");
-
-sliderSections.forEach(section => {
-  const MOVIE_ID = section.getAttribute("data-id");
-  const API_URL = `https://api.themoviedb.org/3/movie/${MOVIE_ID}?api_key=${API_KEY}&language=ar`;
-  const IMAGES_URL = `https://api.themoviedb.org/3/movie/${MOVIE_ID}/images?api_key=${API_KEY}`;
-  
-  Promise.all([
-    fetch(API_URL).then(res => res.json()),
-    fetch(IMAGES_URL).then(res => res.json())
-  ]).then(([data, images]) => {
-    section.innerHTML = `
-      <div class="movie-card">
-        <img class="movie-poster" id="poster-${MOVIE_ID}">
-        <div class="movie-overlay"></div>
-        <div class="movie-content">
-          <img class="movie-logo" id="logo-${MOVIE_ID}">
-          <div class="movie-info">
-            <span>${data.genres.map(g => g.name).join(" • ")}</span>
-            <span class="imdb-badge">IMDb</span>
-            <span class="rating-number">${data.vote_average.toFixed(1)}</span>
-            <span>/10</span>
-          </div>
-          <div class="movie-actions">
-            <button class="action-btn" id="info-${MOVIE_ID}"><i class="fa-solid fa-circle-info"></i></button>
-            <button class="watch-btn" id="watch-${MOVIE_ID}"><i class="fa-solid fa-play"></i><span>ابدأ المشاهدة</span></button>
-            <button class="action-btn" id="fav-${MOVIE_ID}"><i class="fa-solid fa-plus"></i></button>
-          </div>
-        </div>
-      </div>
-    `;
-
-    const posterBase = `https://image.tmdb.org/t/p/original`;
-    const posterEl = section.querySelector(`#poster-${MOVIE_ID}`);
-    const img = new Image();
-    img.src = `${posterBase}${data.backdrop_path}`;
-    img.onload = () => {
-        posterEl.src = img.src;
-        posterEl.classList.add("loaded");
-    };
-
-    const logo = images.logos.find(l => l.iso_639_1 === "ar") || images.logos.find(l => l.iso_639_1 === "en");
-    const logoEl = section.querySelector(`#logo-${MOVIE_ID}`);
-    if (logo) {
-      const logoImg = new Image();
-      logoImg.src = `https://image.tmdb.org/t/p/original${logo.file_path}`;
-      logoImg.onload = () => {
-          logoEl.src = logoImg.src;
-          logoEl.classList.add("loaded");
-      };
-    } else {
-        logoEl.style.display = "none";
-    }
-
-    section.querySelector(`#watch-${MOVIE_ID}`).addEventListener("click", () => {
-      window.location.href = `go:${data.id}`;
-    });
-
-    const favBtn = section.querySelector(`#fav-${MOVIE_ID}`);
-    const favIcon = favBtn.querySelector("i");
-    const favorites = JSON.parse(localStorage.getItem(FAVORITES_KEY)) || [];
-    let isFav = favorites.includes(data.id);
-
-    function updateFav() {
-      if (isFav) {
-        favBtn.classList.add("added");
-        favIcon.classList.replace("fa-plus", "fa-check");
-      } else {
-        favBtn.classList.remove("added");
-        favIcon.classList.replace("fa-check", "fa-plus");
-      }
-    }
-    updateFav();
-
-    favBtn.addEventListener("click", () => {
-      isFav = !isFav;
-      if (isFav) {
-        favorites.push(data.id);
-      } else {
-        favorites.splice(favorites.indexOf(data.id), 1);
-      }
-      localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
-      updateFav();
-    });
-
-    section.querySelector(`#info-${MOVIE_ID}`).addEventListener("click", () => {
-      document.getElementById("modalTitle").textContent = data.title;
-      document.getElementById("movieOverview").textContent = data.overview || "لا يوجد وصف متاح حالياً.";
-      document.getElementById("infoModal").style.display = "block";
-    });
-
-  }).catch(err => console.error("Slider Error:", err));
-});
-
-document.getElementById("closeModal").addEventListener("click", () => {
-  document.getElementById("infoModal").style.display = "none";
-});
-window.addEventListener("click", e => {
-  if (e.target === document.getElementById("infoModal")) {
-    document.getElementById("infoModal").style.display = "none";
-  }
-});
-
-// ===== تحديث صورة الحساب من التخزين المحلي =====
-document.addEventListener("DOMContentLoaded", function() {
-    const accountThumb = document.getElementById('accountThumb');
-    if (accountThumb) {
-        const data = JSON.parse(localStorage.getItem('profileData')) || {};
-        if (data.profilePic) {
-            accountThumb.src = data.profilePic;
-        }
-    }
-});
-
-// ===== الكود الخاص بالبحث =====
-document.addEventListener('DOMContentLoaded', function() {
-    const searchModal = document.getElementById("searchModal");
-    const closeSearchModal = document.getElementById("closeSearchModal");
-    
-    if (searchModal && closeSearchModal) {
-        closeSearchModal.addEventListener("click", function() {
-            searchModal.style.display = "none";
-        });
-        
-        window.addEventListener("click", function(e) {
-            if (e.target == searchModal) {
-                searchModal.style.display = "none";
-            }
-        });
-    }
-
-    const modalSearchInput = document.getElementById("modalSearchInput");
-    if (modalSearchInput) {
-        modalSearchInput.addEventListener("input", function() {
-            const query = this.value.toLowerCase().trim();
-            const resultsContainer = document.getElementById("modalSearchResults");
-            resultsContainer.innerHTML = "";
-            
-            if(query === "") return;
-            
-            const movies = document.querySelectorAll(".section .horizontal-list .card-wrapper");
-            movies.forEach(movie => {
-                const titleElem = movie.querySelector(".card-details-title");
-                if (titleElem && titleElem.textContent.toLowerCase().includes(query)) {
-                    const metaElem = movie.querySelector(".card-details-meta");
-                    const imgElem = movie.querySelector("img");
-                    const imgSrc = imgElem ? (imgElem.getAttribute("data-src") || imgElem.getAttribute("src")) : '';
-                    const link = movie.querySelector("a").getAttribute("href");
-                    const yearElem = metaElem.querySelector(".year");
-                    const ratingElem = metaElem.querySelector(".rating span");
-                    const yearText = yearElem ? yearElem.textContent : "";
-                    const ratingText = ratingElem ? ratingElem.textContent : "";
-                    
-                    const imdbLogo = `<img src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg" alt="IMDb" style="width:30px; height:15px; vertical-align:middle; margin-left:4px;">`;
-                    
-                    const resultItem = document.createElement("div");
-                    resultItem.classList.add("search-result-item");
-                    resultItem.innerHTML = `
-                        <img src="${imgSrc}" alt="${titleElem.textContent}">
-                        <div class="result-info">
-                            <h4>${titleElem.textContent}</h4>
-                            <p>${yearText} | ${ratingText} ${imdbLogo}</p>
-                        </div>
-                    `;
-                    resultItem.addEventListener("click", () => {
-                        window.location.href = link;
-                    });
-                    resultsContainer.appendChild(resultItem);
-                }
-            });
-            
-            if(resultsContainer.innerHTML === ""){
-                resultsContainer.innerHTML = "<p style='text-align:center;color:#ccc;'>لا توجد نتائج</p>";
-            }
-        });
-    }
-});
-
-// ===== كود الكاش للصور =====
-(function() {
-  const CACHE_DAYS = 5; 
-  const CACHE_KEY = "refresh_time_v1";
-  const now = Date.now();
-  const last = localStorage.getItem(CACHE_KEY);
-  const fiveDays = CACHE_DAYS * 24 * 60 * 60 * 1000;
-  const refresh = !last || (now - parseInt(last) > fiveDays);
-
-  if (refresh) {
-    console.log("♻️ تحديث كاش الصور...");
-    localStorage.setItem(CACHE_KEY, now);
-  }
-
-  window.addEventListener("load", function() {
-    document.querySelectorAll("img").forEach(img => {
-      const src = img.src;
-      if (!src) return;
-      if (refresh) {
-        const cleanSrc = src.split("?")[0];
-        img.src = cleanSrc + "?v=" + now;
-      }
-    });
-  });
-})();
-
-// ===== نظام التخزين المؤقت للمحتوى =====
-class AutoCinemaCache {
-    constructor() {
-        this.STORAGE_KEY = 'cinemaPlus_data';
-        this.CACHE_DURATION = 10 * 24 * 60 * 60 * 1000; 
-        this.init();
-    }
-
-    async init() {
-        console.log('🚀 بدء نظام التخزين...');
-        
-        const cachedData = this.getCachedData();
-        
-        if (cachedData && !this.isCacheExpired(cachedData)) {
-            console.log('✅ استخدام البيانات المخزنة');
-            this.renderFromCache(cachedData);
-        } else {
-            console.log('📥 جاري حفظ البيانات الجديدة');
-            await this.fetchAndCacheData();
-        }
-    }
-
-    getCachedData() {
-        try {
-            return JSON.parse(localStorage.getItem(this.STORAGE_KEY));
-        } catch {
-            return null;
-        }
-    }
-
-    isCacheExpired(cachedData) {
-        if (!cachedData?.timestamp) return true;
-        return (Date.now() - new Date(cachedData.timestamp).getTime()) > this.CACHE_DURATION;
-    }
-
-    async fetchAndCacheData() {
-        const dataToStore = {
-            recent: this.extractRecentMovies(),
-            episodes: this.extractEpisodes(),
-            series: this.extractSeriesData(),
-            timestamp: new Date().toISOString()
-        };
-        
-        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(dataToStore));
-        console.log('💾 تم حفظ البيانات بنجاح');
-    }
-
-    extractRecentMovies() {
-        const movies = [];
-        document.querySelectorAll('.card-wrapper').forEach(card => {
-            const title = card.querySelector('.card-details-title')?.textContent;
-            const image = card.querySelector('.card img')?.src;
-            if (title && image) {
-                movies.push({
-                    title: title.trim(),
-                    image: image,
-                    link: card.querySelector('.card')?.href
-                });
-            }
-        });
-        return movies;
-    }
-
-    extractEpisodes() {
-        const episodes = [];
-        document.querySelectorAll('.episode-card').forEach(card => {
-            const title = card.querySelector('.title')?.textContent;
-            const image = card.querySelector('.thumb img')?.src;
-            if (title && image) {
-                episodes.push({
-                    title: title.trim(),
-                    image: image,
-                    link: card.href
-                });
-            }
-        });
-        return episodes;
-    }
-
-    extractSeriesData() {
-        const series = [];
-        const seriesContainer = document.querySelectorAll('.horizontal-list')[2];
-        if (seriesContainer) {
-            seriesContainer.querySelectorAll('.card-wrapper').forEach(card => {
-                const title = card.querySelector('.card-details-title')?.textContent;
-                const image = card.querySelector('.card img')?.src;
-                if (title && image) {
-                    series.push({
-                        title: title.trim(),
-                        image: image,
-                        link: card.querySelector('.card')?.href
-                    });
-                }
-            });
-        }
-        return series;
-    }
-
-    renderFromCache(cachedData) {
-        console.log('🔄 جاري عرض البيانات المخزنة');
-    }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    new AutoCinemaCache();
-});
-</script>
-
-			<script>
-// رابط ملف الجيسون الخاص بك مع رمز لمنع التخزين المؤقت (Cache)
+// كود الجلب المحدث ليعمل داخل التطبيق
 const DATA_URL = "https://raw.githubusercontent.com/ffrrx-2000/cinema-plas-bot/main/movies.json?v=" + Date.now();
 
-async function syncMoviesData() {
+async function syncMovies() {
     try {
         const response = await fetch(DATA_URL);
-        if (!response.ok) return;
         const movies = await response.json();
 
         movies.forEach(movie => {
-            // البحث عن القسم المناسب بناءً على الاختيار في البوت
-            const targetContainer = document.getElementById(`list-${movie.section}`);
+            const targetList = document.getElementById(`list-${movie.section}`);
             
-            if (targetContainer) {
-                const isBestSection = movie.section === 'best';
-                
-                const movieElement = isBestSection ? `
-                    <a href="go:${movie.id}" style="position: relative; display: inline-block; flex-shrink: 0;">
-                        <img height="310" src="${movie.poster}" style="border-radius: 10px; display: block;" width="200">
-                        <div style="position: absolute; bottom: -10px; left: 0; width: 100%; height: 155px; background: linear-gradient(to top, #0a0a0a 20%, transparent 100%); border-radius: 0 0 10px 10px; pointer-events: none;"></div>
-                    </a>
-                ` : `
+            if (targetList) {
+                // استخدمنا onclick لضمان أن التطبيق يفتح الصفحة فوراً
+                const movieHTML = `
                     <div class="card-wrapper">
-                        <a class="card" href="go:${movie.id}">
+                        <a class="card" href="javascript:void(0)" onclick="window.location.href='go:${movie.id}'">
                             <img src="${movie.poster}" alt="${movie.title}" loading="lazy">
                             <div class="card-overlay">
                                 <i class="fas fa-play play-icon"></i>
@@ -1730,75 +1405,16 @@ async function syncMoviesData() {
                         </a>
                         <div class="card-details">
                             <h3 class="card-details-title">${movie.title}</h3>
-                            <div class="card-details-meta">
-                                <span class="year">${movie.year || ''}</span>
-                                <div class="rating">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg" alt="IMDb" style="width:30px">
-                                    <span>8.0</span>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 `;
-                
-                // إضافة الفيلم في بداية القائمة
-                targetContainer.insertAdjacentHTML('afterbegin', movieElement);
-            }
-        });
-    } catch (error) {
-        console.error("خطأ في مزامنة البيانات:", error);
-    }
-}
-
-// تنفيذ المزامنة فور تحميل الصفحة
-document.addEventListener('DOMContentLoaded', syncMoviesData);
-			</script>
-			
-<script>
-// رابط ملف البيانات من مستودعك
-const MOVIES_DATA_URL = "https://raw.githubusercontent.com/ffrrx-2000/cinema-plas-bot/main/movies.json";
-
-async function syncMovies() {
-    try {
-        const response = await fetch(MOVIES_DATA_URL);
-        const movies = await response.json();
-
-        movies.forEach(movie => {
-            // البحث عن القسم المناسب بناءً على ما اخترته في البوت
-            const targetList = document.getElementById(`list-${movie.section}`);
-            
-            if (targetList) {
-                const movieHTML = `
-                    <div class="card-wrapper">
-                        <a class="card" href="go:${movie.id}">
-                            <img src="${movie.poster}" alt="${movie.title}" loading="lazy">
-                            <div class="card-overlay">
-                                <i class="fas fa-play play-icon"></i>
-                                <span class="card-desc">Cinema Plus عالم من المتعة</span>
-                            </div>
-                        </a>
-                        <div class="card-details">
-                            <h3 class="card-details-title">${movie.title}</h3>
-                            <div class="card-details-meta">
-                                <span class="year">${movie.year}</span>
-                                <div class="rating">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg" alt="IMDb">
-                                    <span>8.0</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                // إضافة الفيلم الجديد في بداية القسم
                 targetList.insertAdjacentHTML('afterbegin', movieHTML);
             }
         });
     } catch (error) {
-        console.error("خطأ في مزامنة الأفلام:", error);
+        console.error("خطأ:", error);
     }
 }
-
-// تشغيل المزامنة عند فتح الصفحة
 document.addEventListener('DOMContentLoaded', syncMovies);
 </script>
 
