@@ -656,50 +656,16 @@ a, button, div, span {
 </div>
 
 <script>
-	// جلب الـ ID من الرابط (مثال: movie.html?id=12345)
+const API_KEY = "06f120992cfacd7c118f6e7086d23544";
 const urlParams = new URLSearchParams(window.location.search);
-const movieId = urlParams.get('id'); 
-
-// إذا لم يوجد ID في الرابط، استخدم ID افتراضي أو أظهر تنبيه
-const tmdbId = movieId || "550"; // 550 هو فيلم Fight Club كمثال
-
-const API_KEY = '67634f3780f2d8479e394348618e7e39'; // مفتاحك الحالي
-
-// 1. جلب معلومات الفيلم
-fetch(`https://api.themoviedb.org/3/movie/${tmdbId}?api_key=${API_KEY}&language=ar-SA`)
-    .then(res => res.json())
-    .then(data => {
-        const desc = document.querySelector('.movie-description');
-        if (desc) desc.textContent = data.overview || "لا يوجد وصف متاح.";
-        
-        const titleElement = document.querySelector('.movie-title'); // تأكد من وجود كلاس بهذا الاسم
-        if (titleElement) titleElement.textContent = data.title;
-    });
-
-// 2. جلب الصور (الخلفية واللوجو)
-fetch(`https://api.themoviedb.org/3/movie/${tmdbId}/images?api_key=${API_KEY}`)
-    .then(res => res.json())
-    .then(data => {
-        // تحديث الخلفية
-        if (data.backdrops && data.backdrops.length > 0) {
-            const bgUrl = `https://image.tmdb.org/t/p/original${data.backdrops[0].file_path}`;
-            document.querySelector('.movie-page').style.backgroundImage = `linear-gradient(to bottom, rgba(0,0,0,0.5), #000), url(${bgUrl})`;
-        }
-    });
-
+const MOVIE_ID = urlParams.get('tmdb') || 1306368; // الافتراضي للاحتياط
+const MUX_ID = urlParams.get('mux') || "fkJywfp3BPLFQiM02MsSYbPHJbZyfczMsR5ecO9C8MRQ";
 
 // روابط الفيديو حسب الجودة
-// رابط الفيديو يعتمد الآن على الـ ID القادم من البوت
-const videoSource = `https://stream.mux.com/${tmdbId}.m3u8`; 
-
-var video = document.getElementById('video');
-if (Hls.isSupported()) {
-    var hls = new Hls();
-    hls.loadSource(videoSource);
-    hls.attachMedia(video);
-} else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-    video.src = videoSource;
-}
+const MUX_ID = urlParams.get('mux') || "fkJywfp3BPLFQiM02MsSYbPHJbZyfczMsR5ecO9C8MRQ";
+const videoSources = {
+  "1080": MUX_ID  // هذا هو ID فقط
+};
 
 
 const movieData = {
@@ -1817,50 +1783,84 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 <script>
-    // هذا الكود يضاف في نهاية الصفحة للتحكم الديناميكي
-    (function() {
-        const params = new URLSearchParams(window.location.search);
-        const tmdbId = params.get('tmdb');
-        const muxId = params.get('mux');
-        const API_KEY = '67634f3780f2d8479e394348618e7e39';
+document.addEventListener('DOMContentLoaded', function() {
+    const params = new URLSearchParams(window.location.search);
+    const tmdbId = params.get('id');
+    const muxId = params.get('mux');
+    const movieTitle = params.get('title');
+    const API_KEY = 'YOUR_TMDB_API_KEY'; // ضع مفتاحك هنا
 
-        if (tmdbId && muxId) {
-            // 1. تحديث روابط الفيديو لتشغيل Mux Playback ID
-            const videoUrl = `https://stream.mux.com/${muxId}.m3u8`;
-            const videoElement = document.getElementById('video');
-            if (videoElement) {
-                if (Hls.isSupported()) {
-                    const hls = new Hls();
-                    hls.loadSource(videoUrl);
-                    hls.attachMedia(videoElement);
-                } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
-                    videoElement.src = videoUrl;
-                }
-            }
-
-            // 2. تحديث الوصف من TMDB
-            fetch(`https://api.themoviedb.org/3/movie/${tmdbId}?api_key=${API_KEY}&language=ar-SA`)
-                .then(r => r.json())
-                .then(data => {
-                    const desc = document.querySelector('.movie-description');
-                    if (desc) desc.textContent = data.overview || "لا يوجد وصف متوفر.";
-                });
-
-            // 3. تحديث الخلفية واللوجو
-            fetch(`https://api.themoviedb.org/3/movie/${tmdbId}/images?api_key=${API_KEY}`)
-                .then(r => r.json())
-                .then(data => {
-                    if (data.backdrops && data.backdrops.length > 0) {
-                        const bgPath = `https://image.tmdb.org/t/p/original${data.backdrops[0].file_path}`;
-                        const page = document.querySelector('.movie-page');
-                        if (page) page.style.backgroundImage = `linear-gradient(to bottom, rgba(0,0,0,0.5), #000), url(${bgPath})`;
-                    }
-                    const logo = data.logos.find(l => l.iso_639_1 === 'en') || data.logos[0];
-                    const logoImg = document.getElementById('seriesLogo');
-                    if (logo && logoImg) logoImg.src = `https://image.tmdb.org/t/p/original${logo.file_path}`;
-                });
+    // 1. تحديث العنوان ومشغل Mux
+    if (movieTitle) document.title = movieTitle;
+    if (muxId && typeof Hls !== 'undefined') {
+        const video = document.querySelector('video') || document.getElementById('mainPlayer');
+        const streamUrl = `https://stream.mux.com/${muxId}.m3u8`;
+        if (Hls.isSupported()) {
+            const hls = new Hls();
+            hls.loadSource(streamUrl);
+            hls.attachMedia(video);
+        } else {
+            video.src = streamUrl;
         }
-    })();
+    }
+
+    if (tmdbId) {
+        // 2. جلب القصة باللغة العربية
+        fetch(`https://api.themoviedb.org/3/movie/${tmdbId}?api_key=${API_KEY}&language=ar-SA`)
+            .then(res => res.json())
+            .then(data => {
+                const desc = document.querySelector('.movie-description');
+                if (desc) desc.textContent = data.overview || "لا يوجد وصف متاح بالعربية.";
+            });
+
+        // 3. جلب البوستر واللوجو باللغة الإنجليزية
+        fetch(`https://api.themoviedb.org/3/movie/${tmdbId}/images?api_key=${API_KEY}`)
+            .then(res => res.json())
+            .then(data => {
+                // اختيار خلفية (Backdrop) انجليزية
+                if (data.backdrops && data.backdrops.length > 0) {
+                    const bgUrl = `https://image.tmdb.org/t/p/original${data.backdrops[0].file_path}`;
+                    const hero = document.querySelector('.movie-page');
+                    if (hero) hero.style.backgroundImage = `linear-gradient(to bottom, rgba(0,0,0,0.5), #000), url(${bgUrl})`;
+                }
+
+                // اختيار اللوجو (Logo) بالانجليزية
+                const englishLogo = data.logos.find(l => l.iso_639_1 === 'en');
+                if (englishLogo) {
+                    const logoImg = document.getElementById('seriesLogo') || document.querySelector('.movie-logo');
+                    if (logoImg) logoImg.src = `https://image.tmdb.org/t/p/w500${englishLogo.file_path}`;
+                }
+            });
+    }
+});
+// 1. جلب المعلمات من URL
+const urlParams = new URLSearchParams(window.location.search);
+const MOVIE_ID = urlParams.get('tmdb') || 1306368; // استخدم القيمة من الرابط أو الافتراضي
+const MUX_ID = urlParams.get('mux') || "fkJywfp3BPLFQiM02MsSYbPHJbZyfczMsR5ecO9C8MRQ";
+
+// 2. تحديث videoSources لاستخدام MUX_ID
+const videoSources = {
+  "1080": MUX_ID  // استخدم MUX_ID من الرابط
+};
+
+// 3. تأكد من أن MUX_ID موجود قبل بناء الـ URL
+// في دالة watchNowBtn.addEventListener:
+watchNowBtn.addEventListener("click", () => {
+  videoModal.classList.add("active");
+  
+  const defaultQuality = "1080";
+  currentQuality = defaultQuality;
+  
+  // التحقق من وجود MUX_ID
+  if (!MUX_ID) {
+    alert("❌ رابط الفيديو غير متوفر!");
+    return;
+  }
+  
+  const videoUrl = "https://stream.mux.com/" + videoSources[defaultQuality] + ".m3u8";
+  
+  // ... باقي الكود
+});
 </script>
 
 </body>
