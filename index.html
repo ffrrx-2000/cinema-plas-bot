@@ -1396,7 +1396,7 @@ async function syncMovies() {
                 // استخدمنا onclick لضمان أن التطبيق يفتح الصفحة فوراً
                 const movieHTML = `
                     <div class="card-wrapper">
-                        <a class="card" href="javascript:void(0)" onclick="window.location.href='go:${movie.id}'">
+                        <a class="card" href="javascript:void(0)" onclick="window.location.href = `movie.html?id=${movie.id}&mux=${movie.mux}&title=${encodeURIComponent(movie.title)}`;
                             <img src="${movie.poster}" alt="${movie.title}" loading="lazy">
                             <div class="card-overlay">
                                 <i class="fas fa-play play-icon"></i>
