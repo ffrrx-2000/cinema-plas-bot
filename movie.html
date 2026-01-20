@@ -1835,26 +1835,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <script>
-const urlId = new URLSearchParams(window.location.search).get("id");
-fetch("https://raw.githubusercontent.com/ffrrx-2000/cinema-plas-bot/main/movies.json")
+// قراءة المعرف من الرابط والبحث عنه في ملف البوت
+const urlParams = new URLSearchParams(window.location.search);
+const movieIdFromUrl = urlParams.get("id");
+
+fetch("https://raw.githubusercontent.com/ffrrx-2000/cinema-plas-bot/main/movies.json?v=" + Date.now())
   .then(res => res.json())
   .then(movies => {
-    // استخدمنا == بدلاً من === لضمان مطابقة النص مع الرقم
-    const movie = movies.find(m => m.id == urlId); 
-    if (!movie) return;
+    // البحث عن الفيلم باستخدام == لضمان مطابقة النص مع الرقم
+    const foundMovie = movies.find(m => m.id == movieIdFromUrl);
     
-    document.title = movie.title;
-    if(document.getElementById("overview")) document.getElementById("overview").innerText = "جاري تشغيل: " + movie.title;
-    
-    // تشغيل الفيديو من Mux ID المرفوع بالبوت
-    if (Hls.isSupported()) {
-        const hls = new Hls();
-        hls.loadSource(`https://stream.mux.com/${movie.mux}.m3u8`);
-        hls.attachMedia(document.getElementById('videoPlayer'));
+    if (foundMovie && foundMovie.mux) {
+        document.title = foundMovie.title;
+        // تحديث المشغل بـ Mux ID الخاص بالبوت
+        if (Hls.isSupported()) {
+            const videoElement = document.getElementById('videoPlayer');
+            const hls = new Hls();
+            hls.loadSource(`https://stream.mux.com/${foundMovie.mux}.m3u8`);
+            hls.attachMedia(videoElement);
+            videoElement.play();
+        }
     }
   });
 </script>
 
+
 </body>
 </html>
+
 
