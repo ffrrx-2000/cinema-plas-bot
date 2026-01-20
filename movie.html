@@ -1835,19 +1835,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <script>
-// قراءة المعرف من الرابط والبحث عنه في ملف البوت
 const urlParams = new URLSearchParams(window.location.search);
 const movieIdFromUrl = urlParams.get("id");
 
+// جلب البيانات مع منع الكاش لضمان ظهور الفيلم الجديد
 fetch("https://raw.githubusercontent.com/ffrrx-2000/cinema-plas-bot/main/movies.json?v=" + Date.now())
   .then(res => res.json())
   .then(movies => {
-    // البحث عن الفيلم باستخدام == لضمان مطابقة النص مع الرقم
+    // استخدام == لمطابقة المعرف المرفوع من البوت
     const foundMovie = movies.find(m => m.id == movieIdFromUrl);
     
     if (foundMovie && foundMovie.mux) {
         document.title = foundMovie.title;
-        // تحديث المشغل بـ Mux ID الخاص بالبوت
         if (Hls.isSupported()) {
             const videoElement = document.getElementById('videoPlayer');
             const hls = new Hls();
@@ -1858,7 +1857,6 @@ fetch("https://raw.githubusercontent.com/ffrrx-2000/cinema-plas-bot/main/movies.
     }
   });
 </script>
-
 
 </body>
 </html>
