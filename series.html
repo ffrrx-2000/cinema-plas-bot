@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>صفحة مسلسل</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- إضافة مكتبة hls.js من CDN -->
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body, html {
+    height: 100%;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    color: #fff;
+    background: #000;
+    overflow-x: hidden;
+  }
+
+  .movie-page {
+    position: relative;
+    width: 100%;
+    height: 600px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: top center;
+  }
+  .movie-page::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 400px;
+    background: linear-gradient(to top, rgba(0,0,0,0.98) 50%, rgba(0,0,0,0) 90%);
+    pointer-events: none;
+  }
+  .content {
+    position: absolute;
+    top: 60%;
+    left: 20px;
+    right: 20px;
+    transform: translateY(-0%);
+    z-index: 1;
+  }
+  .meta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin-bottom: 15px;
+  }
+  .imdb {
+    display: flex;
+    align-items: center;
+    background: #f5c518;
+    color: #000;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  .imdb img { height: 16px; margin-left: 5px; }
+  .sub-meta {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+  }
+  .controls {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    max-width: 400px;
+    margin: 0 auto 20px;
+  }
+  .controls .icon-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0.8;
+  }
+  .controls .icon-btn span {
+    font-size: 0.75rem;
+    margin-top: 4px;
+  }
+  .controls .play-btn {
+    background: #e50914;
+    color: #fff;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    opacity: 1;
+  }
+  .description-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin-bottom: 30px;
+  }
+  .rating-box {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border: 1px solid #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+  }
+  .description {
+    flex: 1;
+    opacity: 0.9;
+  }
+  .cast-section {
+    margin-bottom: 20px;
+  }
+  .cast-section h3 {
+    font-size: 1rem;
+    margin-bottom: 8px;
+    text-align: right;
+  }
+  .cast-list {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+  }
+  .cast-item {
+    flex: 0 0 auto;
+    width: 80px;
+    text-align: center;
+    font-size: 0.75rem;
+  }
+  .cast-item img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+  .cast-item .name {
+    margin-top: 4px;
+    color: #eee;
+  }
+  
+  
+
+  /* أنماط النافذة المنبثقة لمشغل الفيديو */
+  .video-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    z-index: 1000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .video-modal.active {
+    display: flex;
+  }
+
+  .video-container {
+    width: auto;
+    max-width: 90%;
+    max-height: 70vh;
+    background-color: #1a1c24;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  }
+
+  .video-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: #1a1c24;
+    border-bottom: 1px solid #2c2f3a;
+  }
+
+  .video-title {
+    font-weight: bold;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin-right: -5px;
+  }
+
+  .video-player-wrapper {
+    position: relative;
+    width: 100%;
+    background-color: #000;
+  }
+
+  #videoPlayer {
+    display: block;
+    width: 100%;
+    max-height: 60vh;
+  }
+
+  .video-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    direction: ltr;
+    transition: opacity 0.3s ease;
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 100;
+  }
+
+  .progress-container {
+    width: 100%;
+    height: 3px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 1.5px;
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background-color: #e50914;
+    border-radius: 1.5px;
+    width: 20%;
+  }
+
+  .control-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .left-controls, .right-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .control-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  .play-pause-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #e50914;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .time-display {
+    font-size: 11px;
+    color: #fff;
+  }
+
+  .fullscreen-btn {
+    margin-left: 8px;
+  }
+
+  .aspect-btn {
+    margin-left: 8px;
+  }
+
+  .video-player-wrapper.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: #000;
+    z-index: 2000;
+  }
+
+  .video-player-wrapper.fullscreen #videoPlayer {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    object-fit: contain !important;
+  }
+
+  /* أنماط قسم الإعلانات */
+  .trailers-section {
+    margin-top: 40px;
+    margin-bottom: 40px;
+  }
+  .trailers-section h3 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    text-align: right;
+    color: #fff;
+  }
+  .trailers-row {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .trailers-row::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+  .trailer-item {
+    flex: 0 0 auto;
+    width: 240px;
+    position: relative;
+    display: block;
+    aspect-ratio: 16/9;
+    background-color: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.2s;
+  }
+  .trailer-item:hover {
+    transform: scale(1.05);
+  }
+  .trailer-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .trailer-item i.fa-play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 36px;
+    color: white;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+
+/* أنماط قسم المواسم - أفقي قابل للسحب */
+.seasons-section {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+.seasons-section h3 {
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+  text-align: right;
+  color: #fff;
+  font-weight: bold;
+}
+.seasons-row {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  padding: 10px 0;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.seasons-row::-webkit-scrollbar {
+  display: none;
+}
+.season-item {
+  flex: 0 0 auto;
+  width: 160px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+.season-item:hover {
+  transform: scale(1.05);
+}
+.season-poster {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+.season-info {
+  margin-top: 10px;
+  text-align: center;
+}
+.season-title {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+.season-episodes {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+/* أنماط قسم الحلقات - مطابق للصورة */
+.episodes-section {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+.episodes-section h3 {
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+  text-align: right;
+  color: #fff;
+  font-weight: bold;
+}
+.episodes-list {
+  display: none;
+}
+.episodes-list.active {
+  display: block;
+}
+.episode-item {
+  display: flex;
+  align-items: flex-start;
+  background: transparent;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #333;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.episode-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+.episode-content {
+  flex: 1;
+  padding-left: 15px;
+  text-align: right;
+}
+.episode-title {
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.episode-duration {
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+.episode-description {
+  color: #ccc;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  margin-bottom: 15px;
+}
+.episode-description.collapsed {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.show-more {
+  color: #1e90ff;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 5px;
+  display: inline-block;
+}
+.show-more:hover {
+  text-decoration: underline;
+}
+.episode-actions {
+  display: none;
+}
+.episode-download {
+  background: #f39c12;
+  color: #000;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.episode-thumbnail {
+  width: 120px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.episode-play-btn {
+  display: none;
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,0.9);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #000;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+.episode-play-btn:hover {
+  background: #fff;
+  transform: scale(1.1);
+}
+
+  .recommend-section {
+    margin-top: 40px;
+  }
+  .recommend-section h3 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    text-align: right;
+  }
+  .recommend-row {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    scroll-behavior: smooth;
+  }
+  .recommend-card {
+    flex: 0 0 auto;
+    width: 140px;
+    background-color: #111;
+    border-radius: 8px;
+    overflow: hidden;
+    text-align: center;
+    color: #fff;
+    transition: transform 0.2s;
+  }
+  .recommend-card:hover {
+    transform: scale(1.05);
+  }
+  .recommend-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  .recommend-card p {
+    padding: 5px 8px;
+    font-size: 0.9em;
+  }
+
+.video-controls.hidden {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.video-player-wrapper.fullscreen .video-controls {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.controls .icon-btn.active {
+  color: #e50914;
+  opacity: 1;
+}
+.controls .icon-btn.active i.fa-heart {
+  color: #e50914;
+}
+.controls .icon-btn.active i.fa-bookmark {
+  color: #e50914;
+}
+
+.skip-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+/* إضافة أنماط زر الجودة وقائمة الجودات */
+.quality-btn {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.3);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.quality-menu {
+  position: absolute;
+  bottom: 40px;
+  right: 0;
+  background: rgba(0, 0, 0, 0.95);
+  border-radius: 8px;
+  padding: 8px 0;
+  min-width: 120px;
+  display: none;
+  flex-direction: column;
+  z-index: 1000;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.quality-menu.active {
+  display: flex;
+}
+
+.quality-option {
+  padding: 10px 16px;
+  cursor: pointer;
+  color: #fff;
+  font-size: 13px;
+  transition: background-color 0.2s;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.quality-option:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.quality-option.selected {
+  color: #e50914;
+  font-weight: bold;
+}
+
+.quality-option.selected::before {
+  content: "✓ ";
+  margin-left: 8px;
+}
+
+
+.tmdb-logo {
+    margin-bottom: 5px;
+    text-align: center;
+  }
+  
+  
+  .tmdb-logo img {
+    height: 70px;
+    object-fit: contain;
+  }
+  
+/* إلغاء تأثير اللمس الأزرق في الهواتف */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* منع اللون الأزرق عند التركيز */
+a, button, div, span {
+  outline: none;
+  -webkit-focus-ring-color: transparent;
+}
+
+/* لجعل النقر يبدو طبيعي بدون خلفية غريبة */
+.item, button {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #888;
+}
+
+.hidden {
+  display: none !important;
+}
+</style>
+</head>
+<body>
+
+<div class="movie-page" id="moviePage">
+<div class="content">
+  <div class="meta">
+    <div class="tmdb-logo" id="seriesLogo"></div>
+    <div class="imdb">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg" alt="IMDb">
+      <span id="imdbRating">0.0</span>
+    </div>
+    <div class="sub-meta">
+      <div id="yearGenre">—</div>
+      <div id="seasons">—</div>
+    </div>
+  </div>
+
+  <div class="controls">
+  <div class="icon-btn" title="أعجبني" id="likeBtn"><i class="fa-regular fa-heart"></i><span>أعجبني</span></div>
+  <div class="icon-btn" title="مشاهدة لاحقاً" id="watchLaterBtn"><i class="fa-regular fa-bookmark"></i><span>لاحقاً</span></div>
+  <div class="play-btn" title="شاهد الآن" id="watchNowBtn"><i class="fa-solid fa-play"></i><span>جاري التحميل...</span></div>
+  <div class="icon-btn" title="تحميل"><i class="fa-solid fa-download"></i><span>تحميل</span></div>
+  <div class="icon-btn" title="مشاهدة الإعلان"><i class="fa-brands fa-youtube"></i><span>إعلان</span></div>
+</div>
+
+  <div class="description-wrapper">
+    <div class="rating-box">R</div>
+    <div class="description" id="overview">جاري جلب التفاصيل…</div>
+  </div>
+
+  <div class="cast-section">
+    <h3>الممثلون</h3>
+    <div class="cast-list" id="castList">
+      <div class="loading">جاري التحميل...</div>
+    </div>
+  </div>
+  
+  <!-- قسم الإعلانات -->
+  <div class="trailers-section hidden">
+    <h3>الإعلانات</h3>
+    <div id="trailersList" class="trailers-row"></div>
+  </div>
+
+  <!-- قسم المواسم -->
+<div class="seasons-section hidden">
+  <h3>المواسم</h3>
+  <div id="seasonsList" class="seasons-row">
+    <div class="loading">جاري تحميل المواسم...</div>
+  </div>
+</div>
+
+  <!-- قسم الحلقات -->
+  <div class="episodes-section hidden">
+    <h3>الحلقات</h3>
+    <div id="episodesList" class="loading">اختر موسماً لعرض الحلقات</div>
+  </div>
+  
+  <div class="recommend-section hidden">
+    <h3>مقترحات</h3>
+    <div id="recommendations" class="recommend-row">
+      <div class="loading">جاري تحميل المقترحات...</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- النافذة المنبثقة لمشغل الفيديو -->
+<div class="video-modal" id="videoModal">
+<div class="video-container">
+  <div class="video-header">
+    <div class="video-title" id="videoTitle">جاري التشغيل...</div>
+    <button class="close-btn" id="closeVideoBtn">×</button>
+  </div>
+  <div class="video-player-wrapper" id="videoPlayerWrapper">
+    <video id="videoPlayer" poster="/placeholder.svg?height=720&width=1280" playsinline>
+      <source src="#" type="video/mp4">
+      متصفحك لا يدعم تشغيل الفيديو.
+    </video>
+    <div class="video-controls" id="videoControls">
+      <div class="progress-container" id="progressContainer">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <div class="control-buttons">
+        <div class="left-controls">
+          <button class="control-btn skip-btn" id="backwardBtn" title="رجوع 10 ثوان">
+            <i class="fa-solid fa-backward-step"></i>
+          </button>
+          <button class="control-btn play-pause-btn" id="playPauseBtn">
+            <i class="fa-solid fa-pause" id="playPauseIcon"></i>
+          </button>
+          <button class="control-btn skip-btn" id="forwardBtn" title="تقديم 10 ثوان">
+            <i class="fa-solid fa-forward-step"></i>
+          </button>
+          <div class="time-display">
+            <span id="currentTime">00:00</span> / <span id="totalTime">00:00</span>
+          </div>
+        </div>
+        <div class="right-controls">
+          <button class="control-btn aspect-btn" id="aspectBtn" title="تغيير طريقة العرض">
+            <i class="fa-solid fa-tv"></i>
+          </button>
+          <!-- إضافة زر الجودة مع قائمة منسدلة -->
+          <div style="position: relative;">
+            <button class="control-btn quality-btn" id="qualityBtn" title="جودة الفيديو">
+              <i class="fa-solid fa-gear"></i>
+            </button>
+            <div class="quality-menu" id="qualityMenu">
+              <!-- سيتم ملؤها ديناميكيًا -->
+            </div>
+          </div>
+          <button class="control-btn fullscreen-btn" id="fullscreenBtn">
+            <i class="fa-solid fa-expand"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// === تهيئة التطبيق ===
+const API_KEY = "06f120992cfacd7c118f6e7086d23544";
+const urlParams = new URLSearchParams(window.location.search);
+const SERIES_ID = urlParams.get('id') || 259731; // ID افتراضي
+
+// بيانات المسلسل الحالي
+let currentSeriesData = {
+  id: SERIES_ID,
+  name: "",
+  poster: "",
+  backdrop: ""
+};
+
+// بيانات الحلقات (سيتم تحميلها من ملف خارجي)
+let episodeLinks = {};
+let currentSeason = 1;
+let isFullscreen = false;
+let controlsVisible = true;
+let controlsTimeout;
+let hls = null;
+let currentQualityLevels = [];
+
+// عناصر DOM
+const videoModal = document.getElementById("videoModal");
+const watchNowBtn = document.getElementById("watchNowBtn");
+const closeVideoBtn = document.getElementById("closeVideoBtn");
+const videoPlayer = document.getElementById("videoPlayer");
+const playPauseBtn = document.getElementById("playPauseBtn");
+const playPauseIcon = document.getElementById("playPauseIcon");
+const currentTimeDisplay = document.getElementById("currentTime");
+const totalTimeDisplay = document.getElementById("totalTime");
+const progressContainer = document.getElementById("progressContainer");
+const progressBar = document.getElementById("progressBar");
+const fullscreenBtn = document.getElementById("fullscreenBtn");
+const aspectBtn = document.getElementById("aspectBtn");
+const videoPlayerWrapper = document.getElementById("videoPlayerWrapper");
+const videoControls = document.getElementById("videoControls");
+const backwardBtn = document.getElementById("backwardBtn");
+const forwardBtn = document.getElementById("forwardBtn");
+const qualityBtn = document.getElementById("qualityBtn");
+const qualityMenu = document.getElementById("qualityMenu");
+const likeBtn = document.getElementById("likeBtn");
+const watchLaterBtn = document.getElementById("watchLaterBtn");
+
+// === وظائف التخزين المحلي ===
+function saveToLocalStorage(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (e) {
+    console.error('خطأ في الحفظ:', e);
+  }
+}
+
+function loadFromLocalStorage(key) {
+  try {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : null;
+  } catch (e) {
+    console.error('خطأ في التحميل:', e);
+    return null;
+  }
+}
+
+// === وظائف تحميل البيانات ===
+async function loadEpisodeLinks() {
+  try {
+    // يمكنك استبدال هذا الرابط برابط ملف نصي يحتوي على روابط الحلقات
+    const response = await fetch(`episodes/${SERIES_ID}.txt`);
+    const text = await response.text();
+    
+    // تحليل الملف النصي (تنسيق: S1E1: playback_id)
+    episodeLinks = {};
+    const lines = text.split('\n');
+    
+    lines.forEach(line => {
+      line = line.trim();
+      if (!line || line.startsWith('#')) return;
+      
+      const match = line.match(/(S\d+)E(\d+):\s*(.+)/i);
+      if (match) {
+        const season = parseInt(match[1].replace('S', ''));
+        const episode = parseInt(match[2]);
+        const playbackId = match[3].trim();
+        
+        const key = `${season}-${episode}`;
+        episodeLinks[key] = playbackId;
+      }
+    });
+    
+    console.log(`تم تحميل ${Object.keys(episodeLinks).length} حلقة`);
+    
+  } catch (error) {
+    console.error('خطأ في تحميل روابط الحلقات:', error);
+    // استخدام بيانات افتراضية للاختبار
+    episodeLinks = {
+      "1-1": "pOlQcjfXb2LrLCVwmLj4WciP6Il4mEFpZDLDsTM9ekM",
+      "1-2": "WhdHXRyLX4FmRrlv00o00xzDHxmx8Z01xcaiyhVwQenwpE",
+      "2-1": "qp01meohBvZ8381y5TMwppJc4F6flZX2g702wfs018pfW00",
+      "2-2": "wGWuC4eW5uBAsuOQ9V257p4y8Ly4G01zoYsPFHknN2zU"
+    };
+  }
+}
+
+async function loadSeriesData() {
+  try {
+    // تحميل بيانات المسلسل من TMDB
+    const seriesResponse = await fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}?api_key=${API_KEY}&language=ar`);
+    const seriesData = await seriesResponse.json();
+    
+    // تحميل الصور
+    const imagesResponse = await fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}/images?api_key=${API_KEY}`);
+    const imagesData = await imagesResponse.json();
+    
+    // تحديث بيانات المسلسل
+    currentSeriesData.name = seriesData.name;
+    currentSeriesData.backdrop = seriesData.backdrop_path;
+    
+    // تحديث واجهة المستخدم
+    document.getElementById("imdbRating").textContent = seriesData.vote_average.toFixed(1);
+    const genres = seriesData.genres.map(g => g.name).join(" • ");
+    document.getElementById("yearGenre").textContent = `${seriesData.first_air_date.slice(0,4)} • ${genres}`;
+    document.getElementById("seasons").textContent = `${seriesData.number_of_seasons} مواسم • ${seriesData.number_of_episodes} حلقة`;
+    document.getElementById("overview").textContent = seriesData.overview;
+    document.getElementById("videoTitle").textContent = seriesData.name;
+    
+    // تعيين خلفية الصفحة
+    const cleanPoster = imagesData.posters.find(p => p.iso_639_1 === null);
+    const imagePath = cleanPoster ? cleanPoster.file_path : seriesData.backdrop_path;
+    
+    if (imagePath) {
+      document.getElementById("moviePage").style.backgroundImage =
+        `url(https://image.tmdb.org/t/p/original${imagePath})`;
+    }
+    
+    // تحميل شعار المسلسل
+    const logo = imagesData.logos.find(l => l.iso_639_1 === "en") || imagesData.logos[0];
+    const logoContainer = document.getElementById("seriesLogo");
+    
+    if (logo && logo.file_path) {
+      logoContainer.innerHTML = `<img src="https://image.tmdb.org/t/p/original${logo.file_path}" alt="${seriesData.name} Logo">`;
+    } else {
+      logoContainer.style.display = "none";
+    }
+    
+    return seriesData;
+    
+  } catch (error) {
+    console.error('خطأ في تحميل بيانات المسلسل:', error);
+    return null;
+  }
+}
+
+async function loadCast() {
+  try {
+    const response = await fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}/credits?api_key=${API_KEY}&language=ar`);
+    const credits = await response.json();
+    
+    const castList = document.getElementById("castList");
+    castList.innerHTML = '';
+    
+    credits.cast.slice(0, 10).forEach(member => {
+      const div = document.createElement("div");
+      div.className = "cast-item";
+      div.innerHTML = `
+        <img src="${member.profile_path ? `https://image.tmdb.org/t/p/w185${member.profile_path}` : 'https://g.top4top.io/p_34489upmc7.jpg'}" alt="${member.name}">
+        <div class="name">${member.name}</div>
+      `;
+      castList.appendChild(div);
+    });
+    
+  } catch (error) {
+    console.error('خطأ في تحميل الممثلين:', error);
+  }
+}
+
+async function loadTrailers() {
+  try {
+    const response = await fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}/videos?api_key=${API_KEY}`);
+    const data = await response.json();
+    
+    const trailersSection = document.querySelector('.trailers-section');
+    const trailersList = document.getElementById("trailersList");
+    
+    const youtubeTrailers = data.results
+      .filter(video => 
+        video.site === "YouTube" && 
+        (video.type === "Trailer" || video.type === "Teaser") &&
+        video.key
+      )
+      .slice(0, 3);
+    
+    if (youtubeTrailers.length === 0) {
+      trailersSection.classList.add('hidden');
+      return;
+    }
+    
+    trailersSection.classList.remove('hidden');
+    trailersList.innerHTML = '';
+    
+    youtubeTrailers.forEach(trailer => {
+      const trailerElement = document.createElement("a");
+      trailerElement.href = `https://www.youtube.com/watch?v=${trailer.key}`;
+      trailerElement.target = "_blank";
+      trailerElement.rel = "noopener noreferrer";
+      trailerElement.className = "trailer-item";
+      
+      trailerElement.innerHTML = `
+        <img 
+          src="https://img.youtube.com/vi/${trailer.key}/maxresdefault.jpg" 
+          alt="${trailer.name}" 
+          onerror="this.src='https://img.youtube.com/vi/${trailer.key}/hqdefault.jpg'"
+        />
+        <i class="fa-solid fa-play"></i>
+      `;
+      
+      trailersList.appendChild(trailerElement);
+    });
+    
+  } catch (error) {
+    console.error("خطأ في جلب الإعلانات:", error);
+    document.querySelector('.trailers-section').classList.add('hidden');
+  }
+}
+
+async function loadSeasons(seriesData) {
+  try {
+    const seasonsSection = document.querySelector('.seasons-section');
+    const seasonsList = document.getElementById("seasonsList");
+    
+    seasonsSection.classList.remove('hidden');
+    seasonsList.innerHTML = '';
+    
+    for (const season of seriesData.seasons) {
+      if (season.season_number === 0) continue;
+      if (!season.air_date) continue;
+      
+      const seasonAirDate = new Date(season.air_date);
+      const currentDate = new Date();
+      if (seasonAirDate > currentDate) continue;
+      
+      if (!season.episode_count || season.episode_count === 0) continue;
+      
+      const seasonItem = document.createElement("div");
+      seasonItem.className = "season-item";
+      seasonItem.dataset.season = season.season_number;
+      seasonItem.onclick = () => showEpisodes(season.season_number);
+      
+      seasonItem.innerHTML = `
+        <img src="${season.poster_path ? `https://image.tmdb.org/t/p/w500${season.poster_path}` : 'https://g.top4top.io/p_34489upmc7.jpg'}" 
+             alt="الموسم ${season.season_number}" 
+             class="season-poster">
+        <div class="season-info">
+          <div class="season-title">الموسم ${season.season_number}</div>
+          <div class="season-episodes">${season.episode_count} حلقة</div>
+        </div>
+      `;
+      
+      seasonsList.appendChild(seasonItem);
+    }
+    
+    // تحميل الحلقات للموسم الأول تلقائياً
+    if (seriesData.seasons.length > 1) {
+      showEpisodes(1);
+    }
+    
+  } catch (error) {
+    console.error('خطأ في تحميل المواسم:', error);
+  }
+}
+
+async function showEpisodes(seasonNumber) {
+  currentSeason = seasonNumber;
+  const episodesSection = document.querySelector('.episodes-section');
+  const episodesList = document.getElementById("episodesList");
+  
+  episodesSection.classList.remove('hidden');
+  
+  // إزالة التحديد من جميع المواسم
+  document.querySelectorAll('.season-item').forEach(item => {
+    item.style.opacity = '0.8';
+  });
+  
+  // تحديد الموسم المختار
+  const selectedSeason = document.querySelector(`.season-item[data-season="${seasonNumber}"]`);
+  if (selectedSeason) {
+    selectedSeason.style.opacity = '1';
+  }
+  
+  // إخفاء جميع قوائم الحلقات
+  const allEpisodeLists = episodesList.querySelectorAll('.episodes-list');
+  allEpisodeLists.forEach(list => list.classList.remove('active'));
+  
+  let currentEpisodesList = document.getElementById(`episodes-season-${seasonNumber}`);
+  
+  if (!currentEpisodesList) {
+    currentEpisodesList = document.createElement('div');
+    currentEpisodesList.id = `episodes-season-${seasonNumber}`;
+    currentEpisodesList.className = 'episodes-list';
+    
+    episodesList.innerHTML = '';
+    episodesList.appendChild(currentEpisodesList);
+    
+    try {
+      const response = await fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}/season/${seasonNumber}?api_key=${API_KEY}&language=ar`);
+      const data = await response.json();
+      
+      data.episodes.forEach(episode => {
+        const episodeElement = createEpisodeElement(episode, seasonNumber);
+        currentEpisodesList.appendChild(episodeElement);
+      });
+      
+      currentEpisodesList.classList.add('active');
+      
+      // تحديث زر التشغيل الرئيسي
+      updateWatchNowButton(seasonNumber, data.episodes[0]);
+      
+    } catch (error) {
+      console.error(`خطأ في تحميل حلقات الموسم ${seasonNumber}:`, error);
+      currentEpisodesList.innerHTML = '<div class="loading">خطأ في تحميل الحلقات</div>';
+    }
+  } else {
+    currentEpisodesList.classList.add('active');
+  }
+}
+
+function createEpisodeElement(episode, seasonNumber) {
+  const episodeItem = document.createElement('div');
+  episodeItem.className = 'episode-item';
+  episodeItem.dataset.season = seasonNumber;
+  episodeItem.dataset.episode = episode.episode_number;
+  
+  const stillPath = episode.still_path ? 
+    `https://image.tmdb.org/t/p/w300${episode.still_path}` : 
+    'https://g.top4top.io/p_34489upmc7.jpg';
+  
+  const runtime = episode.runtime || 45;
+  const episodeKey = `${seasonNumber}-${episode.episode_number}`;
+  const videoUrl = episodeLinks[episodeKey] || '#';
+  
+  const minutes = Math.floor(runtime);
+  const durationText = `${minutes} د`;
+  
+  const description = episode.overview || '';
+  const shortDescription = description.length > 100 ? description.substring(0, 100) + '...' : description;
+  
+  episodeItem.innerHTML = `
+    <div class="episode-content">
+      <div class="episode-title">${episode.name || `الحلقة ${episode.episode_number}`} | E${episode.episode_number}</div>
+      <div class="episode-duration">${durationText}</div>
+      <div class="episode-description collapsed" data-full="${description}">
+        ${shortDescription}
+        ${description.length > 100 ? '<span class="show-more">اظهر المزيد</span>' : ''}
+      </div>
+    </div>
+    <img src="${stillPath}" alt="الحلقة ${episode.episode_number}" class="episode-thumbnail">
+  `;
+  
+  episodeItem.addEventListener('click', (e) => {
+    if (!e.target.classList.contains('show-more')) {
+      playEpisode(videoUrl, `الموسم ${seasonNumber} - الحلقة ${episode.episode_number}: ${episode.name}`);
+    }
+  });
+  
+  const showMoreBtn = episodeItem.querySelector('.show-more');
+  if (showMoreBtn) {
+    showMoreBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const descDiv = episodeItem.querySelector('.episode-description');
+      const fullText = descDiv.getAttribute('data-full');
+      
+      if (descDiv.classList.contains('collapsed')) {
+        descDiv.innerHTML = fullText + '<span class="show-more">اظهر أقل</span>';
+        descDiv.classList.remove('collapsed');
+      } else {
+        const shortText = fullText.length > 100 ? fullText.substring(0, 100) + '...' : fullText;
+        descDiv.innerHTML = shortText + '<span class="show-more">اظهر المزيد</span>';
+        descDiv.classList.add('collapsed');
+      }
+      
+      const newShowMoreBtn = descDiv.querySelector('.show-more');
+      if (newShowMoreBtn) {
+        newShowMoreBtn.addEventListener('click', arguments.callee);
+      }
+    });
+  }
+  
+  return episodeItem;
+}
+
+function updateWatchNowButton(seasonNumber, firstEpisode) {
+  const episodeKey = `${seasonNumber}-${firstEpisode.episode_number}`;
+  const hasEpisode = episodeLinks[episodeKey];
+  
+  watchNowBtn.querySelector('span').textContent = `S${seasonNumber} E${firstEpisode.episode_number}`;
+  
+  watchNowBtn.onclick = () => {
+    if (hasEpisode) {
+      playEpisode(episodeLinks[episodeKey], `الموسم ${seasonNumber} - الحلقة ${firstEpisode.episode_number}: ${firstEpisode.name}`);
+    } else {
+      alert('الحلقة غير متاحة للتشغيل حالياً');
+    }
+  };
+}
+
+// === وظائف مشغل الفيديو ===
+function playEpisode(videoUrl, title) {
+  if (videoUrl === '#') {
+    alert('سيتم توفر الحلقة قريباً');
+    return;
+  }
+  
+  videoModal.classList.add("active");
+  document.getElementById("videoTitle").textContent = title;
+  
+  // تنظيف HLS السابق إن وجد
+  if (hls) {
+    hls.destroy();
+    hls = null;
+  }
+  
+  // بناء رابط MUX
+  if (!videoUrl.startsWith("http")) {
+    videoUrl = `https://stream.mux.com/${videoUrl}.m3u8`;
+  }
+  
+  const isHLS = videoUrl.endsWith('.m3u8');
+  
+  if (isHLS && Hls.isSupported()) {
+    hls = new Hls({
+      enableWorker: true,
+      lowLatencyMode: true,
+    });
+    
+    hls.loadSource(videoUrl);
+    hls.attachMedia(videoPlayer);
+    
+    hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
+      currentQualityLevels = data.levels;
+      buildQualityMenu();
+      qualityBtn.style.display = 'flex';
+      videoPlayer.play();
+    });
+    
+    hls.on(Hls.Events.ERROR, function(event, data) {
+      console.error('HLS error:', data);
+      if (data.fatal) {
+        switch(data.type) {
+          case Hls.ErrorTypes.NETWORK_ERROR:
+            hls.startLoad();
+            break;
+          case Hls.ErrorTypes.MEDIA_ERROR:
+            hls.recoverMediaError();
+            break;
+          default:
+            hls.destroy();
+            break;
+        }
+      }
+    });
+    
+  } else if (isHLS && videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+    videoPlayer.src = videoUrl;
+    videoPlayer.load();
+    videoPlayer.play();
+    qualityBtn.style.display = 'none';
+    
+  } else {
+    videoPlayer.src = videoUrl;
+    videoPlayer.load();
+    videoPlayer.play();
+    qualityBtn.style.display = 'none';
+  }
+  
+  showControls();
+  resetControlsTimer();
+}
+
+function buildQualityMenu() {
+  qualityMenu.innerHTML = '';
+  
+  const autoOption = document.createElement('div');
+  autoOption.className = 'quality-option selected';
+  autoOption.textContent = 'تلقائي (Auto)';
+  autoOption.onclick = function() {
+    if (hls) {
+      hls.currentLevel = -1;
+      updateQualitySelection(-1);
+      qualityMenu.classList.remove('active');
+    }
+  };
+  qualityMenu.appendChild(autoOption);
+  
+  currentQualityLevels.forEach((level, index) => {
+    const option = document.createElement('div');
+    option.className = 'quality-option';
+    
+    const height = level.height;
+    let qualityName = height + 'p';
+    
+    if (height >= 2160) qualityName = '4K';
+    else if (height >= 1440) qualityName = '2K';
+    else if (height >= 1080) qualityName = '1080p';
+    else if (height >= 720) qualityName = '720p';
+    else if (height >= 480) qualityName = '480p';
+    else if (height >= 360) qualityName = '360p';
+    
+    option.textContent = qualityName;
+    option.onclick = function() {
+      if (hls) {
+        hls.currentLevel = index;
+        updateQualitySelection(index);
+        qualityMenu.classList.remove('active');
+      }
+    };
+    
+    qualityMenu.appendChild(option);
+  });
+}
+
+function updateQualitySelection(selectedIndex) {
+  const options = qualityMenu.querySelectorAll('.quality-option');
+  options.forEach((option, index) => {
+    option.classList.remove('selected');
+    if (index === selectedIndex + 1) {
+      option.classList.add('selected');
+    } else if (selectedIndex === -1 && index === 0) {
+      option.classList.add('selected');
+    }
+  });
+}
+
+// === وظائف التحكم بالفيديو ===
+function togglePlay(e) {
+  if (e) e.stopPropagation();
+  
+  if (videoPlayer.paused) {
+    videoPlayer.play();
+    playPauseIcon.classList.remove("fa-play");
+    playPauseIcon.classList.add("fa-pause");
+  } else {
+    videoPlayer.pause();
+    playPauseIcon.classList.remove("fa-pause");
+    playPauseIcon.classList.add("fa-play");
+  }
+  
+  resetControlsTimer();
+}
+
+function formatTime(time) {
+  const minutes = Math.floor(time / 60);
+  const seconds = Math.floor(time % 60);
+  return `${pad(minutes)}:${pad(seconds)}`;
+}
+
+function pad(number) {
+  return number < 10 ? "0" + number : number;
+}
+
+function showControls() {
+  videoControls.classList.remove('hidden');
+  controlsVisible = true;
+  resetControlsTimer();
+}
+
+function hideControls() {
+  if (!videoPlayer.paused) {
+    videoControls.classList.add('hidden');
+    controlsVisible = false;
+  }
+}
+
+function resetControlsTimer() {
+  clearTimeout(controlsTimeout);
+  controlsTimeout = setTimeout(() => {
+    if (!videoPlayer.paused) {
+      hideControls();
+    }
+  }, 5000);
+}
+
+function toggleFullscreen() {
+  if (!isFullscreen) {
+    if (videoPlayerWrapper.requestFullscreen) {
+      videoPlayerWrapper.requestFullscreen();
+    } else if (videoPlayerWrapper.mozRequestFullScreen) {
+      videoPlayerWrapper.mozRequestFullScreen();
+    } else if (videoPlayerWrapper.webkitRequestFullscreen) {
+      videoPlayerWrapper.webkitRequestFullscreen();
+    } else if (videoPlayerWrapper.msRequestFullscreen) {
+      videoPlayerWrapper.msRequestFullscreen();
+    }
+    
+    videoPlayerWrapper.classList.add("fullscreen");
+    fullscreenBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
+    isFullscreen = true;
+    
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+      document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) {
+      document.msExitFullscreen();
+    }
+    
+    videoPlayerWrapper.classList.remove("fullscreen");
+    fullscreenBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
+    isFullscreen = false;
+  }
+  
+  resetControlsTimer();
+}
+
+function handleFullscreenChange() {
+  if (!document.fullscreenElement && 
+      !document.webkitFullscreenElement && 
+      !document.mozFullScreenElement && 
+      !document.msFullscreenElement) {
+    
+    videoPlayerWrapper.classList.remove("fullscreen");
+    fullscreenBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
+    isFullscreen = false;
+    showControls();
+  }
+}
+
+// === وظائف التفضيلات ===
+function loadSavedData() {
+  const savedLikes = loadFromLocalStorage('likedSeries') || [];
+  const savedWatchLater = loadFromLocalStorage('watchLaterSeries') || [];
+  
+  if (savedLikes.includes(SERIES_ID)) {
+    likeBtn.classList.add('active');
+    const heartIcon = likeBtn.querySelector('i');
+    heartIcon.classList.remove('fa-regular');
+    heartIcon.classList.add('fa-solid');
+  }
+  
+  if (savedWatchLater.includes(SERIES_ID)) {
+    watchLaterBtn.classList.add('active');
+    const bookmarkIcon = watchLaterBtn.querySelector('i');
+    bookmarkIcon.classList.remove('fa-regular');
+    bookmarkIcon.classList.add('fa-solid');
+  }
+}
+
+function toggleLike() {
+  const savedLikes = loadFromLocalStorage('likedSeries') || [];
+  const heartIcon = likeBtn.querySelector('i');
+  
+  if (likeBtn.classList.contains('active')) {
+    likeBtn.classList.remove('active');
+    heartIcon.classList.remove('fa-solid');
+    heartIcon.classList.add('fa-regular');
+    
+    const index = savedLikes.indexOf(SERIES_ID);
+    if (index > -1) savedLikes.splice(index, 1);
+  } else {
+    likeBtn.classList.add('active');
+    heartIcon.classList.remove('fa-regular');
+    heartIcon.classList.add('fa-solid');
+    
+    if (!savedLikes.includes(SERIES_ID)) {
+      savedLikes.push(SERIES_ID);
+    }
+  }
+  
+  saveToLocalStorage('likedSeries', savedLikes);
+}
+
+function toggleWatchLater() {
+  const savedWatchLater = loadFromLocalStorage('watchLaterSeries') || [];
+  const bookmarkIcon = watchLaterBtn.querySelector('i');
+  
+  if (watchLaterBtn.classList.contains('active')) {
+    watchLaterBtn.classList.remove('active');
+    bookmarkIcon.classList.remove('fa-solid');
+    bookmarkIcon.classList.add('fa-regular');
+    
+    const index = savedWatchLater.indexOf(SERIES_ID);
+    if (index > -1) savedWatchLater.splice(index, 1);
+  } else {
+    watchLaterBtn.classList.add('active');
+    bookmarkIcon.classList.remove('fa-regular');
+    bookmarkIcon.classList.add('fa-solid');
+    
+    if (!savedWatchLater.includes(SERIES_ID)) {
+      savedWatchLater.push(SERIES_ID);
+    }
+  }
+  
+  saveToLocalStorage('watchLaterSeries', savedWatchLater);
+}
+
+// === التحميل الأولي ===
+async function initializeApp() {
+  try {
+    // تحميل جميع البيانات بشكل متوازي
+    const [seriesData] = await Promise.all([
+      loadSeriesData(),
+      loadEpisodeLinks(),
+      loadCast(),
+      loadTrailers()
+    ]);
+    
+    if (seriesData) {
+      await loadSeasons(seriesData);
+    }
+    
+    loadSavedData();
+    
+    // إظهار الأقسام المخفية
+    document.querySelectorAll('.hidden').forEach(el => {
+      el.classList.remove('hidden');
+    });
+    
+  } catch (error) {
+    console.error('خطأ في تحميل التطبيق:', error);
+  }
+}
+
+// === إعداد المستمعين للأحداث ===
+document.addEventListener('DOMContentLoaded', initializeApp);
+
+backwardBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 10);
+  resetControlsTimer();
+});
+
+forwardBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  videoPlayer.currentTime = Math.min(videoPlayer.duration, videoPlayer.currentTime + 10);
+  resetControlsTimer();
+});
+
+closeVideoBtn.addEventListener("click", () => {
+  videoModal.classList.remove("active");
+  videoPlayer.pause();
+  if (hls) {
+    hls.destroy();
+    hls = null;
+  }
+});
+
+videoModal.addEventListener("click", (e) => {
+  if (e.target === videoModal) {
+    videoModal.classList.remove("active");
+    videoPlayer.pause();
+    if (hls) {
+      hls.destroy();
+      hls = null;
+    }
+  }
+});
+
+playPauseBtn.addEventListener("click", togglePlay);
+
+videoPlayer.addEventListener("timeupdate", () => {
+  const currentTime = videoPlayer.currentTime;
+  const duration = videoPlayer.duration;
+
+  if (isNaN(duration)) return;
+
+  const progressPercent = (currentTime / duration) * 100;
+  progressBar.style.width = `${progressPercent}%`;
+
+  currentTimeDisplay.textContent = formatTime(currentTime);
+  totalTimeDisplay.textContent = formatTime(duration);
+});
+
+progressContainer.addEventListener("click", (e) => {
+  e.stopPropagation();
+  const width = progressContainer.offsetWidth;
+  const clickX = e.offsetX;
+  const duration = videoPlayer.duration;
+  videoPlayer.currentTime = (clickX / width) * duration;
+  resetControlsTimer();
+});
+
+fullscreenBtn.addEventListener("click", function(e) {
+  e.stopPropagation();
+  toggleFullscreen();
+});
+
+aspectBtn.addEventListener("click", function(e) {
+  e.stopPropagation();
+  if (videoPlayer.style.objectFit === "cover") {
+    videoPlayer.style.objectFit = "contain";
+    aspectBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
+  } else {
+    videoPlayer.style.objectFit = "cover";
+    aspectBtn.innerHTML = '<i class="fa-solid fa-tv"></i>';
+  }
+  resetControlsTimer();
+});
+
+qualityBtn.addEventListener('click', function(e) {
+  e.stopPropagation();
+  qualityMenu.classList.toggle('active');
+  resetControlsTimer();
+});
+
+document.addEventListener('click', function(e) {
+  if (!qualityBtn.contains(e.target) && !qualityMenu.contains(e.target)) {
+    qualityMenu.classList.remove('active');
+  }
+});
+
+videoPlayerWrapper.addEventListener('click', function(e) {
+  if (e.target.closest('.video-controls')) return;
+  
+  if (controlsVisible) {
+    hideControls();
+  } else {
+    showControls();
+  }
+});
+
+videoPlayerWrapper.addEventListener('mousemove', function() {
+  showControls();
+});
+
+videoPlayerWrapper.addEventListener('touchstart', function(e) {
+  if (e.target.closest('.video-controls')) return;
+  
+  if (controlsVisible) {
+    hideControls();
+  } else {
+    showControls();
+  }
+});
+
+videoControls.addEventListener('mousemove', function(e) {
+  e.stopPropagation();
+  resetControlsTimer();
+});
+
+videoControls.addEventListener('click', function(e) {
+  e.stopPropagation();
+  resetControlsTimer();
+});
+
+videoPlayer.addEventListener('play', function() {
+  resetControlsTimer();
+});
+
+likeBtn.addEventListener('click', toggleLike);
+watchLaterBtn.addEventListener('click', toggleWatchLater);
+
+document.addEventListener('fullscreenchange', handleFullscreenChange);
+document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+document.addEventListener('keydown', function(e) {
+  if (videoModal.classList.contains('active')) {
+    if (e.code === 'Space') {
+      e.preventDefault();
+      togglePlay();
+    }
+    else if (e.code === 'Escape' && isFullscreen) {
+      toggleFullscreen();
+    }
+    else if (e.code === 'KeyF') {
+      toggleFullscreen();
+    }
+    else if (e.code === 'ArrowRight') {
+      videoPlayer.currentTime = Math.min(videoPlayer.duration, videoPlayer.currentTime + 10);
+      showControls();
+    }
+    else if (e.code === 'ArrowLeft') {
+      videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 10);
+      showControls();
+    }
+  }
+});
+</script>
+
+</body>
+  </html
