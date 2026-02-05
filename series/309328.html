@@ -50,21 +50,6 @@
     opacity: 0.9;
     margin-bottom: 15px;
   }
-  .title-section {
-    text-align: center;
-    margin-bottom: 10px;
-  }
-  .primary-title {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #fff;
-    margin-bottom: 5px;
-  }
-  .secondary-title {
-    font-size: 1.2rem;
-    color: #aaa;
-    font-weight: normal;
-  }
   .imdb {
     display: flex;
     align-items: center;
@@ -609,10 +594,6 @@
 <div class="content">
   <div class="meta">
     <div class="tmdb-logo" id="seriesLogo"></div>
-    <div class="title-section">
-      <div class="primary-title" id="primaryTitle"></div>
-      <div class="secondary-title" id="secondaryTitle"></div>
-    </div>
     <div class="imdb">
       <img src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg" alt="IMDb">
       <span id="imdbRating">0.0</span>
@@ -703,7 +684,8 @@ const API_KEY = "06f120992cfacd7c118f6e7086d23544";
 const SERIES_ID = 309328;
 
 const episodeLinks = {
-    "1-1": "vI00J3S01018Ob2gNm1QXYRmjLXNG7QGQ6ZavXj9gp102r00"
+    "1-1": "vI00J3S01018Ob2gNm1QXYRmjLXNG7QGQ6ZavXj9gp102r00",
+    "1-2": "EoeInGub8aAv2Vcwtf8RZuhh5wtS02vkjNRKRG8L9W5A"
 };
 
 // ===== قواعد عرض العناوين =====
@@ -796,13 +778,6 @@ Promise.all([
   fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}?api_key=${API_KEY}&language=ar`).then(r => r.json())
 ]).then(([enData, arData]) => {
   const titles = determineTitleDisplay(enData, arData);
-  
-  document.getElementById("primaryTitle").textContent = titles.primary;
-  if (titles.secondary) {
-    document.getElementById("secondaryTitle").textContent = titles.secondary;
-  } else {
-    document.getElementById("secondaryTitle").style.display = 'none';
-  }
   
   // جلب صورة البوستر
   fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}/images?api_key=${API_KEY}`)
@@ -967,6 +942,11 @@ function playEpisode(videoUrl, title) {
   
   document.getElementById("videoModal").classList.add("active");
   document.getElementById("videoTitle").textContent = title;
+  
+  // تعيين صورة البوستر كخلفية قبل التشغيل
+  if (seriesPosterUrl) {
+    videoPlayer.poster = seriesPosterUrl;
+  }
   
   if (hls) {
     hls.destroy();
