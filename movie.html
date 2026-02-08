@@ -874,12 +874,16 @@ function buildQualityMenu() {
     qualityMenu.appendChild(autoOption);
     
     // إضافة جميع الدقات المتاحة مع تحويل الأسماء
+    const addedLabels = new Set();
     hlsInstance.levels.forEach((level, index) => {
       const displayLabel = mapQualityLabel(level.height);
-      const option = document.createElement("div");
-      option.setAttribute("data-quality", index.toString());
-      option.textContent = `${displayLabel}p`;
-      qualityMenu.appendChild(option);
+      if (!addedLabels.has(displayLabel)) {
+        addedLabels.add(displayLabel);
+        const option = document.createElement("div");
+        option.setAttribute("data-quality", index.toString());
+        option.textContent = `${displayLabel}p`;
+        qualityMenu.appendChild(option);
+      }
     });
     
     // تمييز الجودة الحالية
@@ -1432,7 +1436,7 @@ window.addEventListener('orientationchange', function() {
 videoPlayer.setAttribute('playsinline', '');
 videoPlayer.setAttribute('webkit-playsinline', '');
 
-// إ��فاء عناصر التحكم تلقائيًا بعد بدء تشغيل الفيديو في وضع ملء الشاشة
+// إخفاء عناصر التحكم تلقائيًا بعد بدء تشغيل الفيديو في وضع ملء الشاشة
 videoPlayer.addEventListener('playing', () => {
   if (isFullscreen) {
     controlsTimeout = setTimeout(hideControls, 3000);
