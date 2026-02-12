@@ -685,7 +685,8 @@ const SERIES_ID = 309328;
 
 const episodeLinks = {
     "1-1": "vI00J3S01018Ob2gNm1QXYRmjLXNG7QGQ6ZavXj9gp102r00",
-    "1-2": "nRstq01hkoG5D7NQOOxxFcIVK01eW8XvYFhVWResIbGYA"
+    "1-2": "nRstq01hkoG5D7NQOOxxFcIVK01eW8XvYFhVWResIbGYA",
+    "1-3": "GnHPVBokwlvMO7JDXkw55sTNo02gyD4GQ02rzlsuHL2Xc"
 };
 
 // ===== قواعد عرض العناوين =====
@@ -779,7 +780,7 @@ Promise.all([
 ]).then(([enData, arData]) => {
   const titles = determineTitleDisplay(enData, arData);
   
-  // جلب صورة البوستر
+  // جلب صورة البوستر للخلفية
   fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}/images?api_key=${API_KEY}`)
   .then(res => res.json())
   .then(images => {
@@ -787,10 +788,16 @@ Promise.all([
   const imagePath = cleanPoster ? cleanPoster.file_path : enData.poster_path;
   if (imagePath) {
   document.getElementById("moviePage").style.backgroundImage = `url(https://image.tmdb.org/t/p/original${imagePath})`;
-  // حفظ رابط البوستر لاستخدامه في المشغل
-  seriesPosterUrl = `https://image.tmdb.org/t/p/w780${imagePath}`;
   }
   });
+
+  // حفظ صورة الخلفية الأفقية (backdrop) لاستخدامها في المشغل
+  const backdropPath = enData.backdrop_path;
+  if (backdropPath) {
+    seriesPosterUrl = `https://image.tmdb.org/t/p/w1280${backdropPath}`;
+  } else if (enData.poster_path) {
+    seriesPosterUrl = `https://image.tmdb.org/t/p/w780${enData.poster_path}`;
+  }
   
   document.getElementById("imdbRating").textContent = enData.vote_average.toFixed(1);
   
