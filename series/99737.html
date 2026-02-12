@@ -280,9 +280,6 @@
   .fullscreen-btn {
     margin-left: 8px;
   }
-  .aspect-btn {
-    margin-left: 8px;
-  }
   .video-player-wrapper.fullscreen {
     position: fixed;
     top: 0;
@@ -515,23 +512,17 @@
     object-fit: cover;
   }
 
-  .video-controls.hidden {
-    opacity: 0 !important;
-    pointer-events: none !important;
-  }
   .video-player-wrapper.fullscreen .video-controls {
     opacity: 1;
     pointer-events: auto;
   }
+  .video-controls.hidden {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
   .controls .icon-btn.active {
     color: #e50914;
     opacity: 1;
-  }
-  .controls .icon-btn.active i.fa-heart {
-    color: #e50914;
-  }
-  .controls .icon-btn.active i.fa-bookmark {
-    color: #e50914;
   }
   .skip-btn {
     width: 28px;
@@ -585,10 +576,6 @@
     color: #e50914;
     font-weight: bold;
   }
-  .quality-option.selected::before {
-    content: "\2713 ";
-    margin-left: 8px;
-  }
   .tmdb-logo {
     margin-bottom: 5px;
     text-align: center;
@@ -602,11 +589,6 @@
   }
   a, button, div, span {
     outline: none;
-    -webkit-focus-ring-color: transparent;
-  }
-  .item, button {
-    -webkit-user-select: none;
-    user-select: none;
   }
 </style>
 </head>
@@ -627,40 +609,40 @@
   </div>
 
   <div class="controls">
-    <div class="icon-btn" title="\u0623\u0639\u062C\u0628\u0646\u064A" id="likeBtn"><i class="fa-regular fa-heart"></i><span>\u0623\u0639\u062C\u0628\u0646\u064A</span></div>
-    <div class="icon-btn" title="\u0645\u0634\u0627\u0647\u062F\u0629 \u0644\u0627\u062D\u0642\u0627\u064B" id="watchLaterBtn"><i class="fa-regular fa-bookmark"></i><span>\u0644\u0627\u062D\u0642\u0627\u064B</span></div>
-    <div class="play-btn" title="\u0634\u0627\u0647\u062F \u0627\u0644\u0622\u0646" id="watchNowBtn"><i class="fa-solid fa-play"></i><span>S1 E1</span></div>
-    <div class="icon-btn" title="\u062A\u062D\u0645\u064A\u0644"><i class="fa-solid fa-download"></i><span>\u062A\u062D\u0645\u064A\u0644</span></div>
-    <div class="icon-btn" title="\u0645\u0634\u0627\u0647\u062F\u0629 \u0627\u0644\u0625\u0639\u0644\u0627\u0646"><i class="fa-brands fa-youtube"></i><span>\u0625\u0639\u0644\u0627\u0646</span></div>
+    <div class="icon-btn" title="أعجبني" id="likeBtn"><i class="fa-regular fa-heart"></i><span>أعجبني</span></div>
+    <div class="icon-btn" title="مشاهدة لاحقاً" id="watchLaterBtn"><i class="fa-regular fa-bookmark"></i><span>لاحقاً</span></div>
+    <div class="play-btn" title="شاهد الآن" id="watchNowBtn"><i class="fa-solid fa-play"></i><span>S1 E1</span></div>
+    <div class="icon-btn" title="تحميل"><i class="fa-solid fa-download"></i><span>تحميل</span></div>
+    <div class="icon-btn" title="مشاهدة الإعلان"><i class="fa-brands fa-youtube"></i><span>إعلان</span></div>
   </div>
 
   <div class="description-wrapper">
     <div class="rating-box">R</div>
-    <div class="description" id="overview">\u062C\u0627\u0631\u064A \u062C\u0644\u0628 \u0627\u0644\u062A\u0641\u0627\u0635\u064A\u0644...</div>
+    <div class="description" id="overview">جاري جلب التفاصيل...</div>
   </div>
 
   <div class="cast-section">
-    <h3>\u0627\u0644\u0645\u0645\u062B\u0644\u0648\u0646</h3>
+    <h3>الممثلون</h3>
     <div class="cast-list" id="castList"></div>
   </div>
   
   <div class="trailers-section">
-    <h3>\u0627\u0644\u0625\u0639\u0644\u0627\u0646\u0627\u062A</h3>
+    <h3>الإعلانات</h3>
     <div id="trailersList" class="trailers-row"></div>
   </div>
 
   <div class="seasons-section">
-    <h3>\u0627\u0644\u0645\u0648\u0627\u0633\u0645</h3>
+    <h3>المواسم</h3>
     <div id="seasonsList" class="seasons-row"></div>
   </div>
 
   <div class="episodes-section">
-    <h3>\u0627\u0644\u062D\u0644\u0642\u0627\u062A</h3>
+    <h3>الحلقات</h3>
     <div id="episodesList"></div>
   </div>
   
   <div class="recommend-section">
-    <h3>\u0645\u0642\u062A\u0631\u062D\u0627\u062A</h3>
+    <h3>مقترحات</h3>
     <div id="recommendations" class="recommend-row"></div>
   </div>
 </div>
@@ -682,15 +664,15 @@
       </div>
       <div class="control-buttons">
         <div class="left-controls">
-          <button class="control-btn skip-btn" id="backwardBtn" title="\u0631\u062C\u0648\u0639 10 \u062B\u0648\u0627\u0646"><i class="fa-solid fa-backward-step"></i></button>
+          <button class="control-btn skip-btn" id="backwardBtn"><i class="fa-solid fa-backward-step"></i></button>
           <button class="control-btn play-pause-btn" id="playPauseBtn"><i class="fa-solid fa-pause" id="playPauseIcon"></i></button>
-          <button class="control-btn skip-btn" id="forwardBtn" title="\u062A\u0642\u062F\u064A\u0645 10 \u062B\u0648\u0627\u0646"><i class="fa-solid fa-forward-step"></i></button>
+          <button class="control-btn skip-btn" id="forwardBtn"><i class="fa-solid fa-forward-step"></i></button>
           <div class="time-display"><span id="currentTime">00:00</span> / <span id="totalTime">00:00</span></div>
         </div>
         <div class="right-controls">
-          <button class="control-btn aspect-btn" id="aspectBtn" title="\u062A\u063A\u064A\u064A\u0631 \u0637\u0631\u064A\u0642\u0629 \u0627\u0644\u0639\u0631\u0636"><i class="fa-solid fa-tv"></i></button>
+          <button class="control-btn" id="aspectBtn"><i class="fa-solid fa-tv"></i></button>
           <div style="position: relative;">
-            <button class="control-btn quality-btn" id="qualityBtn" title="\u062C\u0648\u062F\u0629 \u0627\u0644\u0641\u064A\u062F\u064A\u0648"><i class="fa-solid fa-gear"></i></button>
+            <button class="control-btn quality-btn" id="qualityBtn"><i class="fa-solid fa-gear"></i></button>
             <div class="quality-menu" id="qualityMenu"></div>
           </div>
           <button class="control-btn fullscreen-btn" id="fullscreenBtn"><i class="fa-solid fa-expand"></i></button>
@@ -718,6 +700,7 @@ const episodeLinks = {
     "1-10": "cMnrLXs49GR8Y00DIk6XVCvCFHDnMj1J2ZBL0002qlpH6Y"
 };
 
+// ===== قواعد عرض العناوين =====
 const WESTERN_LANGUAGES = ['en', 'fr', 'de', 'it', 'es', 'pt', 'nl', 'sv', 'no', 'da', 'fi', 'pl', 'cs', 'hu', 'ro', 'el', 'ru', 'uk'];
 const ASIAN_LANGUAGES = ['ja', 'ko', 'zh', 'th', 'vi', 'id', 'ms', 'tl', 'hi', 'ta', 'te', 'ml', 'bn'];
 const TURKISH_LANGUAGES = ['tr'];
@@ -735,30 +718,38 @@ function determineTitleDisplay(data, arabicData) {
   let primary = '';
   let secondary = null;
   
+  // تركي
   if (TURKISH_LANGUAGES.includes(originalLang) || originCountry.some(c => TURKISH_COUNTRIES.includes(c))) {
     primary = originalTitle;
-    if (englishTitle && englishTitle !== originalTitle) secondary = englishTitle;
+    if (englishTitle && englishTitle !== originalTitle) {
+      secondary = englishTitle;
+    }
   }
+  // آسيوي
   else if (ASIAN_LANGUAGES.includes(originalLang) || originCountry.some(c => ASIAN_COUNTRIES.includes(c))) {
     primary = englishTitle;
     secondary = null;
   }
+  // غربي
   else {
     primary = englishTitle;
-    if (arabicTitle && arabicTitle !== englishTitle) secondary = arabicTitle;
+    if (arabicTitle && arabicTitle !== englishTitle) {
+      secondary = arabicTitle;
+    }
   }
   
   return { primary, secondary };
 }
 
 let currentSeason = 1;
-let isFullscreen = false;
-let controlsVisible = true;
-let controlsTimeout;
-let userActivity = false;
-let hls = null;
-let currentQualityLevels = [];
-let seriesPosterUrl = '';
+  let isFullscreen = false;
+  let controlsVisible = true;
+  let controlsTimeout;
+  let hls = null;
+  let currentQualityLevels = [];
+  let seriesPosterUrl = ''; // متغير لحفظ صورة البوستر
+  let currentAspectMode = 0; // لتتبع وضع العرض الحالي
+  const aspectModes = ['contain', 'cover', 'fill']; // أوضاع العرض المختلفة
 
 const videoModal = document.getElementById("videoModal");
 const watchNowBtn = document.getElementById("watchNowBtn");
@@ -793,22 +784,25 @@ forwardBtn.addEventListener("click", (e) => {
   resetControlsTimer();
 });
 
+// جلب بيانات المسلسل
 Promise.all([
   fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}?api_key=${API_KEY}&language=en`).then(r => r.json()),
   fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}?api_key=${API_KEY}&language=ar`).then(r => r.json())
 ]).then(([enData, arData]) => {
   const titles = determineTitleDisplay(enData, arData);
   
+  // جلب صورة البوستر للخلفية
   fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}/images?api_key=${API_KEY}`)
   .then(res => res.json())
   .then(images => {
-    const cleanPoster = images.posters.find(p => p.iso_639_1 === null);
-    const imagePath = cleanPoster ? cleanPoster.file_path : enData.poster_path;
-    if (imagePath) {
-      document.getElementById("moviePage").style.backgroundImage = `url(https://image.tmdb.org/t/p/original${imagePath})`;
-    }
+  const cleanPoster = images.posters.find(p => p.iso_639_1 === null);
+  const imagePath = cleanPoster ? cleanPoster.file_path : enData.poster_path;
+  if (imagePath) {
+  document.getElementById("moviePage").style.backgroundImage = `url(https://image.tmdb.org/t/p/original${imagePath})`;
+  }
   });
 
+  // حفظ صورة الخلفية الأفقية (backdrop) لاستخدامها في المشغل
   const backdropPath = enData.backdrop_path;
   if (backdropPath) {
     seriesPosterUrl = `https://image.tmdb.org/t/p/w1280${backdropPath}`;
@@ -818,31 +812,46 @@ Promise.all([
   
   document.getElementById("imdbRating").textContent = enData.vote_average.toFixed(1);
   
+  // ترجمة التصنيفات إلى العربية
   const genreTranslations = {
-    "Action": "\u0627\u0643\u0634\u0646", "Adventure": "\u0645\u063A\u0627\u0645\u0631\u0629",
-    "Animation": "\u0631\u0633\u0648\u0645 \u0645\u062A\u062D\u0631\u0643\u0629", "Comedy": "\u0643\u0648\u0645\u064A\u062F\u064A\u0627",
-    "Crime": "\u062C\u0631\u064A\u0645\u0629", "Documentary": "\u0648\u062B\u0627\u0626\u0642\u064A",
-    "Drama": "\u062F\u0631\u0627\u0645\u0627", "Family": "\u0639\u0627\u0626\u0644\u064A",
-    "Fantasy": "\u0641\u0627\u0646\u062A\u0627\u0632\u064A\u0627", "History": "\u062A\u0627\u0631\u064A\u062E\u064A",
-    "Horror": "\u0631\u0639\u0628", "Music": "\u0645\u0648\u0633\u064A\u0642\u064A",
-    "Mystery": "\u063A\u0645\u0648\u0636", "Romance": "\u0631\u0648\u0645\u0627\u0646\u0633\u064A",
-    "Science Fiction": "\u062E\u064A\u0627\u0644 \u0639\u0644\u0645\u064A",
-    "Sci-Fi & Fantasy": "\u062E\u064A\u0627\u0644 \u0639\u0644\u0645\u064A \u0648\u0641\u0627\u0646\u062A\u0627\u0632\u064A\u0627",
-    "Thriller": "\u0627\u062B\u0627\u0631\u0629", "War": "\u062D\u0631\u0628",
-    "Western": "\u063A\u0631\u0628\u064A",
-    "Action & Adventure": "\u0627\u0643\u0634\u0646 \u0648\u0645\u063A\u0627\u0645\u0631\u0629",
-    "Kids": "\u0627\u0637\u0641\u0627\u0644", "Reality": "\u0648\u0627\u0642\u0639\u064A",
-    "War & Politics": "\u062D\u0631\u0628 \u0648\u0633\u064A\u0627\u0633\u0629"
+    "Action": "اكشن",
+    "Adventure": "مغامرة",
+    "Animation": "رسوم متحركة",
+    "Comedy": "كوميديا",
+    "Crime": "جريمة",
+    "Documentary": "وثائقي",
+    "Drama": "دراما",
+    "Family": "عائلي",
+    "Fantasy": "فانتازيا",
+    "History": "تاريخي",
+    "Horror": "رعب",
+    "Music": "موسيقي",
+    "Mystery": "غموض",
+    "Romance": "رومانسي",
+    "Science Fiction": "خيال علمي",
+    "Sci-Fi & Fantasy": "خيال علمي وفانتازيا",
+    "TV Movie": "فيلم تلفزيوني",
+    "Thriller": "اثارة",
+    "War": "حرب",
+    "Western": "غربي",
+    "Action & Adventure": "اكشن ومغامرة",
+    "Kids": "اطفال",
+    "News": "اخبار",
+    "Reality": "واقعي",
+    "Soap": "مسلسل درامي",
+    "Talk": "حواري",
+    "War & Politics": "حرب وسياسة"
   };
   const genres = enData.genres.map(g => genreTranslations[g.name] || g.name).join(" . ");
   document.getElementById("yearGenre").textContent = `${enData.first_air_date.slice(0,4)} . ${genres}`;
-  document.getElementById("seasons").textContent = `${enData.number_of_seasons} \u0645\u0648\u0627\u0633\u0645 . ${enData.number_of_episodes} \u062D\u0644\u0642\u0629`;
+  document.getElementById("seasons").textContent = `${enData.number_of_seasons} مواسم . ${enData.number_of_episodes} حلقة`;
   document.getElementById("overview").textContent = arData.overview || enData.overview;
   document.getElementById("videoTitle").textContent = titles.primary;
   
   displaySeasons(enData.seasons);
 });
 
+// جلب الممثلين
 fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}/credits?api_key=${API_KEY}&language=ar`)
   .then(res => res.json())
   .then(credits => {
@@ -872,10 +881,10 @@ function displaySeasons(seasons) {
     seasonItem.className = "season-item";
     seasonItem.onclick = () => showEpisodes(season.season_number);
     seasonItem.innerHTML = `
-      <img src="${season.poster_path ? `https://image.tmdb.org/t/p/w500${season.poster_path}` : 'https://g.top4top.io/p_34489upmc7.jpg'}" alt="\u0627\u0644\u0645\u0648\u0633\u0645 ${season.season_number}" class="season-poster">
+      <img src="${season.poster_path ? `https://image.tmdb.org/t/p/w500${season.poster_path}` : 'https://g.top4top.io/p_34489upmc7.jpg'}" alt="الموسم ${season.season_number}" class="season-poster">
       <div class="season-info">
-        <div class="season-title">\u0627\u0644\u0645\u0648\u0633\u0645 ${season.season_number}</div>
-        <div class="season-episodes">${season.episode_count} \u062D\u0644\u0642\u0629</div>
+        <div class="season-title">الموسم ${season.season_number}</div>
+        <div class="season-episodes">${season.episode_count} حلقة</div>
       </div>
     `;
     seasonsList.appendChild(seasonItem);
@@ -918,25 +927,25 @@ function createEpisodeElement(episode, seasonNumber) {
   const runtime = episode.runtime || 45;
   const episodeKey = `${seasonNumber}-${episode.episode_number}`;
   const videoUrl = episodeLinks[episodeKey] || '#';
-  const durationText = `${Math.floor(runtime)} \u062F`;
+  const durationText = `${Math.floor(runtime)} د`;
   const description = episode.overview || '';
   const shortDescription = description.length > 100 ? description.substring(0, 100) + '...' : description;
   
   episodeItem.innerHTML = `
     <div class="episode-content">
-      <div class="episode-title">${episode.name || `\u0627\u0644\u062D\u0644\u0642\u0629 ${episode.episode_number}`} | E${episode.episode_number}</div>
+      <div class="episode-title">${episode.name || `الحلقة ${episode.episode_number}`} | E${episode.episode_number}</div>
       <div class="episode-duration">${durationText}</div>
       <div class="episode-description collapsed" data-full="${description}">
         ${shortDescription}
-        ${description.length > 100 ? '<span class="show-more">\u0627\u0638\u0647\u0631 \u0627\u0644\u0645\u0632\u064A\u062F</span>' : ''}
+        ${description.length > 100 ? '<span class="show-more">اظهر المزيد</span>' : ''}
       </div>
     </div>
-    <img src="${stillPath}" alt="\u0627\u0644\u062D\u0644\u0642\u0629 ${episode.episode_number}" class="episode-thumbnail">
+    <img src="${stillPath}" alt="الحلقة ${episode.episode_number}" class="episode-thumbnail">
   `;
   
   episodeItem.addEventListener('click', (e) => {
     if (!e.target.classList.contains('show-more')) {
-      playEpisode(videoUrl, `\u0627\u0644\u0645\u0648\u0633\u0645 ${seasonNumber} - \u0627\u0644\u062D\u0644\u0642\u0629 ${episode.episode_number}`);
+      playEpisode(videoUrl, `الموسم ${seasonNumber} - الحلقة ${episode.episode_number}`);
     }
   });
   
@@ -945,13 +954,14 @@ function createEpisodeElement(episode, seasonNumber) {
 
 function playEpisode(videoUrl, title) {
   if (videoUrl === '#') {
-    alert('\u0633\u064A\u062A\u0645 \u062A\u0648\u0641\u0631 \u0627\u0644\u062D\u0644\u0642\u0629 \u0642\u0631\u064A\u0628\u0627');
+    alert('سيتم توفر الحلقة قريبا');
     return;
   }
   
   document.getElementById("videoModal").classList.add("active");
   document.getElementById("videoTitle").textContent = title;
   
+  // تعيين صورة البوستر كخلفية قبل التشغيل
   if (seriesPosterUrl) {
     videoPlayer.poster = seriesPosterUrl;
   }
@@ -977,21 +987,6 @@ function playEpisode(videoUrl, title) {
       qualityBtn.style.display = 'flex';
       videoPlayer.play();
     });
-    hls.on(Hls.Events.ERROR, function(event, data) {
-      if (data.fatal) {
-        switch(data.type) {
-          case Hls.ErrorTypes.NETWORK_ERROR:
-            hls.startLoad();
-            break;
-          case Hls.ErrorTypes.MEDIA_ERROR:
-            hls.recoverMediaError();
-            break;
-          default:
-            hls.destroy();
-            break;
-        }
-      }
-    });
   } else if (isHLS && videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
     videoPlayer.src = videoUrl;
     videoPlayer.load();
@@ -1012,7 +1007,7 @@ function buildQualityMenu() {
   qualityMenu.innerHTML = '';
   const autoOption = document.createElement('div');
   autoOption.className = 'quality-option selected';
-  autoOption.textContent = '\u062A\u0644\u0642\u0627\u0626\u064A (Auto)';
+  autoOption.textContent = 'تلقائي (Auto)';
   autoOption.onclick = function() {
     if (hls) {
       hls.currentLevel = -1;
@@ -1031,8 +1026,6 @@ function buildQualityMenu() {
     else if (height >= 1440) qualityName = '2K';
     else if (height >= 1080) qualityName = '1080p';
     else if (height >= 720) qualityName = '720p';
-    else if (height >= 480) qualityName = '480p';
-    else if (height >= 360) qualityName = '360p';
     option.textContent = qualityName;
     option.onclick = function() {
       if (hls) {
@@ -1060,12 +1053,7 @@ qualityBtn.addEventListener('click', function(e) {
   resetControlsTimer();
 });
 
-document.addEventListener('click', function(e) {
-  if (!qualityBtn.contains(e.target) && !qualityMenu.contains(e.target)) {
-    qualityMenu.classList.remove('active');
-  }
-});
-
+// الإعلانات
 fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}/videos?api_key=${API_KEY}`)
   .then(res => res.json())
   .then(data => {
@@ -1089,9 +1077,9 @@ setTimeout(() => showEpisodes(1), 1000);
 
 watchNowBtn.addEventListener("click", () => {
   if (episodeLinks["1-1"]) {
-    playEpisode(episodeLinks["1-1"], "\u0627\u0644\u0645\u0648\u0633\u0645 1 - \u0627\u0644\u062D\u0644\u0642\u0629 1");
+    playEpisode(episodeLinks["1-1"], "الموسم 1 - الحلقة 1");
   } else {
-    alert('\u0644\u0627 \u062A\u0648\u062C\u062F \u062D\u0644\u0642\u0627\u062A \u0645\u062A\u0627\u062D\u0629 \u0644\u0644\u062A\u0634\u063A\u064A\u0644');
+    alert('لا توجد حلقات متاحة للتشغيل');
   }
 });
 
@@ -1164,9 +1152,11 @@ function toggleFullscreen() {
     } else if (videoPlayerWrapper.msRequestFullscreen) {
       videoPlayerWrapper.msRequestFullscreen();
     }
+    
     videoPlayerWrapper.classList.add("fullscreen");
     fullscreenBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
     isFullscreen = true;
+    
   } else {
     if (document.exitFullscreen) {
       document.exitFullscreen();
@@ -1177,10 +1167,12 @@ function toggleFullscreen() {
     } else if (document.msExitFullscreen) {
       document.msExitFullscreen();
     }
+    
     videoPlayerWrapper.classList.remove("fullscreen");
     fullscreenBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
     isFullscreen = false;
   }
+  
   resetControlsTimer();
 }
 
@@ -1206,6 +1198,7 @@ function handleFullscreenChange() {
       !document.webkitFullscreenElement && 
       !document.mozFullScreenElement && 
       !document.msFullscreenElement) {
+    
     videoPlayerWrapper.classList.remove("fullscreen");
     fullscreenBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
     isFullscreen = false;
@@ -1229,22 +1222,38 @@ function hideControls() {
 function resetControlsTimer() {
   clearTimeout(controlsTimeout);
   controlsTimeout = setTimeout(() => {
-    if (!videoPlayer.paused) hideControls();
+    if (!videoPlayer.paused) {
+      hideControls();
+    }
   }, 5000);
 }
 
 videoPlayerWrapper.addEventListener('click', function(e) {
-  if (e.target.closest('.video-controls')) return;
-  if (controlsVisible) hideControls();
-  else showControls();
+  if (e.target.closest('.video-controls')) {
+    return;
+  }
+  
+  if (controlsVisible) {
+    hideControls();
+  } else {
+    showControls();
+  }
 });
 
-videoPlayerWrapper.addEventListener('mousemove', showControls);
+videoPlayerWrapper.addEventListener('mousemove', function() {
+  showControls();
+});
 
 videoPlayerWrapper.addEventListener('touchstart', function(e) {
-  if (e.target.closest('.video-controls')) return;
-  if (controlsVisible) hideControls();
-  else showControls();
+  if (e.target.closest('.video-controls')) {
+    return;
+  }
+  
+  if (controlsVisible) {
+    hideControls();
+  } else {
+    showControls();
+  }
 });
 
 videoControls.addEventListener('mousemove', function(e) {
@@ -1261,6 +1270,7 @@ videoPlayer.addEventListener('play', function() {
   resetControlsTimer();
 });
 
+// جلب شعار المسلسل
 fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}/images?api_key=${API_KEY}`)
   .then(res => res.json())
   .then(images => {
@@ -1273,6 +1283,7 @@ fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}/images?api_key=${API_KEY}`)
     }
   });
 
+// LocalStorage للإعجاب والمشاهدة لاحقًا
 function saveToLocalStorage(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch(e) {}
 }
