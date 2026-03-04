@@ -696,44 +696,34 @@ const episodeLinks = {
     "1-6": "q02aQJqOolJZS8i8bnsUWSp6oJz3QJPQ00RVBhrAhSorw",
     "1-7": "hlZ01PF5cp677BVcHgvBQ2zQnxJcpfUbjdNWPcf56REw",
     "1-8": "F2jUDobHkwtx2362Y8xWFJ0001A9jnb0258ovM9YZY3wpU",
-    "1-9": "N7d5LBSi4EeaUIUzVmXbAfYR8WQNt9jnlnXkL00jdYKo"
+    "1-9": "N7d5LBSi4EeaUIUzVmXbAfYR8WQNt9jnlnXkL00jdYKo",
+    "1-10": "8KnRM2zO2nov400eSq02tnLBbvTmEBNfpFBnbSz3PRybA"
 };
 
 // ===== قواعد عرض العناوين =====
-const WESTERN_LANGUAGES = ['en', 'fr', 'de', 'it', 'es', 'pt', 'nl', 'sv', 'no', 'da', 'fi', 'pl', 'cs', 'hu', 'ro', 'el', 'ru', 'uk'];
-const ASIAN_LANGUAGES = ['ja', 'ko', 'zh', 'th', 'vi', 'id', 'ms', 'tl', 'hi', 'ta', 'te', 'ml', 'bn'];
-const TURKISH_LANGUAGES = ['tr'];
-const WESTERN_COUNTRIES = ['US', 'GB', 'CA', 'AU', 'NZ', 'IE', 'FR', 'DE', 'IT', 'ES', 'PT', 'NL', 'BE', 'AT', 'CH', 'SE', 'NO', 'DK', 'FI', 'PL', 'CZ', 'HU', 'RO', 'GR', 'RU', 'UA', 'MX', 'BR', 'AR', 'CO', 'CL', 'PE'];
-const ASIAN_COUNTRIES = ['JP', 'KR', 'CN', 'TW', 'HK', 'TH', 'VN', 'ID', 'MY', 'PH', 'SG', 'IN'];
-const TURKISH_COUNTRIES = ['TR'];
+// اللغات التي تُكتب بالإنجليزي فقط: كوري، ياباني، صيني، هندي
+const FORCE_ENGLISH_LANGUAGES = ['ko', 'ja', 'zh', 'hi', 'ta', 'te', 'ml', 'bn'];
+const FORCE_ENGLISH_COUNTRIES = ['KR', 'JP', 'CN', 'TW', 'HK', 'IN'];
 
 function determineTitleDisplay(data, arabicData) {
   const originalLang = data.original_language || '';
   const originCountry = data.origin_country || [];
   const originalTitle = data.original_name || '';
   const englishTitle = data.name || '';
-  const arabicTitle = arabicData ? arabicData.name : null;
   
   let primary = '';
   let secondary = null;
   
-  // تركي
-  if (TURKISH_LANGUAGES.includes(originalLang) || originCountry.some(c => TURKISH_COUNTRIES.includes(c))) {
-    primary = originalTitle;
-    if (englishTitle && englishTitle !== originalTitle) {
-      secondary = englishTitle;
-    }
-  }
-  // آسيوي
-  else if (ASIAN_LANGUAGES.includes(originalLang) || originCountry.some(c => ASIAN_COUNTRIES.includes(c))) {
+  // كوري/ياباني/صيني/هندي = إنجليزي فقط
+  if (FORCE_ENGLISH_LANGUAGES.includes(originalLang) || originCountry.some(c => FORCE_ENGLISH_COUNTRIES.includes(c))) {
     primary = englishTitle;
     secondary = null;
   }
-  // غربي
+  // باقي اللغات (عربي، تركي، إنجليزي، فرنسي الخ) = اللغة الأصلية
   else {
-    primary = englishTitle;
-    if (arabicTitle && arabicTitle !== englishTitle) {
-      secondary = arabicTitle;
+    primary = originalTitle || englishTitle;
+    if (englishTitle && englishTitle !== originalTitle && originalTitle) {
+      secondary = englishTitle;
     }
   }
   
