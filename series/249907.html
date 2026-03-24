@@ -694,7 +694,11 @@ const episodeLinks = {
     "1-4": "Ekpu1BRUNFsHWsW1pbbA01oB02Lf00iyvzAdaFRYEPFJ1Y",
     "1-5": "vkcy9QDgYsLeQjwX7lQYkC18IWLv5dPn39RN01SolGvk",
     "1-6": "grZo00tVhHDCVM23EfTg8zbz4Ch8PG4bo008cJ3nFFojA",
-    "1-7": "5MAkkraddV029nql5m02iwdKxd14uBLl5p00HmHxV6O7Lk"
+    "1-7": "5MAkkraddV029nql5m02iwdKxd14uBLl5p00HmHxV6O7Lk",
+    "1-8": "Aqc9rp1O42qyDiaYb3Fjf00i8nFtoTEpuiFHmMvb2Zo00",
+    "1-9": "FSnvQpZ013gv97PE7Jg9aN01dGF00SDh4t00NW01Ccx02MAxs",
+    "1-10": "C01rd15wkl00PYnjyqe02bjqKshJJTdKO9koeNHPPwBk8M",
+    "1-11": "lZySReMKEOstpN7utLJNyVjREEyG2A5Cs00sKtlKwwKI"
 };
 
 // ===== قواعد عرض العناوين =====
@@ -770,7 +774,7 @@ forwardBtn.addEventListener("click", (e) => {
   resetControlsTimer();
 });
 
-// جلب بيانات المسلسل
+// جلب بيانات ��لمسلسل
 Promise.all([
   fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}?api_key=${API_KEY}&language=en`).then(r => r.json()),
   fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}?api_key=${API_KEY}&language=ar`).then(r => r.json())
