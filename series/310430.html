@@ -688,7 +688,8 @@ const API_KEY = "06f120992cfacd7c118f6e7086d23544";
 const SERIES_ID = 310430;
 
 const episodeLinks = {
-    "1-1": "dN01402Dkxlzr01bqT6rV8ZNYF5L2LXCcapSRC1NtLaQyA"
+    "1-1": "dN01402Dkxlzr01bqT6rV8ZNYF5L2LXCcapSRC1NtLaQyA",
+    "1-2": "bBgztmphZfu1GY3hQDPccVyQg7PqXPNB01kgWnzCKIhk"
 };
 
 // ===== قواعد عرض العناوين =====
@@ -764,7 +765,7 @@ forwardBtn.addEventListener("click", (e) => {
   resetControlsTimer();
 });
 
-// جلب بيانات المسلسل
+// جلب بيانات ��لمسلسل
 Promise.all([
   fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}?api_key=${API_KEY}&language=en`).then(r => r.json()),
   fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}?api_key=${API_KEY}&language=ar`).then(r => r.json())
