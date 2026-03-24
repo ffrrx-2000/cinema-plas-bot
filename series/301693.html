@@ -705,44 +705,37 @@ const episodeLinks = {
     "1-15": "kgEzOE4IhfUJyifxhFRKmtP8JrFVIpsNdg8op9n2e4Y",
     "1-16": "aC498mvAqowuZj854z9tEbftNDrN2MKxRydbYriH4CI",
     "1-17": "cNA01k8Yb61cPL9Ifq01pVHjIgXmVw6gMLZBvWAnNn7B00",
-    "1-18": "VfwmLY6fpaw02BF8WzBa02ZtXusNyvGW1QoeXdec2QzZk"
+    "1-18": "VfwmLY6fpaw02BF8WzBa02ZtXusNyvGW1QoeXdec2QzZk",
+    "1-19": "g4TpeYRmtUAeqQ0002a78dTRW6q01BLo028zeegOAHWDTTA",
+    "1-20": "D8iiN8HPrD00O8R27KnvJx9XROBoUKOui9vOYOEesHfI",
+    "1-21": "r8xrB3dLH3A3joB8epD6DLb501gdqCf02D2ljH6fvkF2g",
+    "1-22": "k5piL7BspLbGWzP11ReJh8e2uZ02pPRCzk02LjjJlG01xc"
 };
 
 // ===== قواعد عرض العناوين =====
-const WESTERN_LANGUAGES = ['en', 'fr', 'de', 'it', 'es', 'pt', 'nl', 'sv', 'no', 'da', 'fi', 'pl', 'cs', 'hu', 'ro', 'el', 'ru', 'uk'];
-const ASIAN_LANGUAGES = ['ja', 'ko', 'zh', 'th', 'vi', 'id', 'ms', 'tl', 'hi', 'ta', 'te', 'ml', 'bn'];
-const TURKISH_LANGUAGES = ['tr'];
-const WESTERN_COUNTRIES = ['US', 'GB', 'CA', 'AU', 'NZ', 'IE', 'FR', 'DE', 'IT', 'ES', 'PT', 'NL', 'BE', 'AT', 'CH', 'SE', 'NO', 'DK', 'FI', 'PL', 'CZ', 'HU', 'RO', 'GR', 'RU', 'UA', 'MX', 'BR', 'AR', 'CO', 'CL', 'PE'];
-const ASIAN_COUNTRIES = ['JP', 'KR', 'CN', 'TW', 'HK', 'TH', 'VN', 'ID', 'MY', 'PH', 'SG', 'IN'];
-const TURKISH_COUNTRIES = ['TR'];
+// اللغات التي تُكتب بالإنجليزي فقط: كوري، ياباني، صيني، هندي
+const FORCE_ENGLISH_LANGUAGES = ['ko', 'ja', 'zh', 'hi', 'ta', 'te', 'ml', 'bn'];
+const FORCE_ENGLISH_COUNTRIES = ['KR', 'JP', 'CN', 'TW', 'HK', 'IN'];
 
 function determineTitleDisplay(data, arabicData) {
   const originalLang = data.original_language || '';
   const originCountry = data.origin_country || [];
   const originalTitle = data.original_name || '';
   const englishTitle = data.name || '';
-  const arabicTitle = arabicData ? arabicData.name : null;
   
   let primary = '';
   let secondary = null;
   
-  // تركي
-  if (TURKISH_LANGUAGES.includes(originalLang) || originCountry.some(c => TURKISH_COUNTRIES.includes(c))) {
-    primary = originalTitle;
-    if (englishTitle && englishTitle !== originalTitle) {
-      secondary = englishTitle;
-    }
-  }
-  // آسيوي
-  else if (ASIAN_LANGUAGES.includes(originalLang) || originCountry.some(c => ASIAN_COUNTRIES.includes(c))) {
+  // كوري/ياباني/صيني/هندي = إنجليزي فقط
+  if (FORCE_ENGLISH_LANGUAGES.includes(originalLang) || originCountry.some(c => FORCE_ENGLISH_COUNTRIES.includes(c))) {
     primary = englishTitle;
     secondary = null;
   }
-  // غربي
+  // باقي اللغات (عربي، تركي، إنجليزي، فرنسي الخ) = اللغة الأصلية
   else {
-    primary = englishTitle;
-    if (arabicTitle && arabicTitle !== englishTitle) {
-      secondary = arabicTitle;
+    primary = originalTitle || englishTitle;
+    if (englishTitle && englishTitle !== originalTitle && originalTitle) {
+      secondary = englishTitle;
     }
   }
   
@@ -792,7 +785,7 @@ forwardBtn.addEventListener("click", (e) => {
   resetControlsTimer();
 });
 
-// جلب بيانات المسلسل
+// جلب بيانات ��لمسلسل
 Promise.all([
   fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}?api_key=${API_KEY}&language=en`).then(r => r.json()),
   fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}?api_key=${API_KEY}&language=ar`).then(r => r.json())
