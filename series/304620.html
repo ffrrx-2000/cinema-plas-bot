@@ -704,7 +704,20 @@ const episodeLinks = {
     "1-14": "lRXjFTZlw1l2BjlAJuJSVkPXgh9MUwph01hI3zihwvsE",
     "1-15": "Vq02MdfkJowv1tC6poqotHoVbdEGY68ESLIG5NQLRuPQ",
     "1-16": "Fep8KWrzbRetWZwy6vSVcu202JwKZs00PJrqi00arW96kI",
-    "1-17": "1AuxwRxe2TudXYmlzZ4sNN49OI01FQmDWPs9axrODeEY"
+    "1-17": "1AuxwRxe2TudXYmlzZ4sNN49OI01FQmDWPs9axrODeEY",
+    "1-18": "Wl4Olw1dCP1MkQHHuqQdrR9JoETjh7LvyLb4nwenPqY",
+    "1-19": "dN9cM14b31AoQKymiKuH2Nsw01z76yZ678cQoqsxIRjI",
+    "1-20": "g9HV8JUs7fPbdI2IkPK9pTLG3QIqklWFpN01IpIgM01h00",
+    "1-21": "gsNPNs7bkduIqNycYIniJdRcvDKz9w2UGoZg5DBdIpg",
+    "1-22": "Sq2mNmOqEmjm18bkOY1QMIQ4maujmCYa48028gygkWZ00",
+    "1-23": "JRA88u00e8nI02pIpOtjERAo2aFMahRuCwbnG34XsEZ5I",
+    "1-24": "MY3vvfD02pOFFeV7ohPX3rIkY1qUGUzcmo2gKFB1jUo00",
+    "1-25": "kHefeLoH5UMWlKNPaRTMF200UwCaBaHL51B9pUGOHEvo",
+    "1-26": "rt7N7786LsY3D2ZWLTxaCHfev7bRncsVwr01Y86q46g4",
+    "1-27": "iVHpkO5oKgrq75011o7WOgq01aVENi2McDnLRwuuJWLdE",
+    "1-28": "k5D9ingxNolMuqaNehGj00tf7uXiC96qhwX20101d00MHWw",
+    "1-29": "3I3IYSqCbjpK5Humbs00Yrpoex57skM016bcqHuAahdgQ",
+    "1-30": "zGJ5DwgyxXsJ5zLnUAm6vaTLXXtjbsQcMPWJkyHDqGI"
 };
 
 // ===== قواعد عرض العناوين =====
@@ -780,7 +793,7 @@ forwardBtn.addEventListener("click", (e) => {
   resetControlsTimer();
 });
 
-// جلب بيانات المسلسل
+// جلب بيانات ��لمسلسل
 Promise.all([
   fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}?api_key=${API_KEY}&language=en`).then(r => r.json()),
   fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}?api_key=${API_KEY}&language=ar`).then(r => r.json())
