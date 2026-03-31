@@ -711,7 +711,8 @@ const episodeLinks = {
     "1-21": "PcxUTNqpyqbtcQTY701eSoL501zFSxlC9YdEuNOAcGvF4",
     "1-22": "TDiisO4qxREbTUEcLSi9V5OOZe00U5UXpG6FcitbyUgs",
     "1-23": "di7Xz00sQnti00EW4Ci5cZ8gxXNa8b9GyhJCUERzABjpY",
-    "1-24": "7HcWv6sV7ZHE1Pz2pXPG3eXDn724cbJDHbvfS3V9Z1A"
+    "1-24": "7HcWv6sV7ZHE1Pz2pXPG3eXDn724cbJDHbvfS3V9Z1A",
+    "1-25": "mmUvoDL00czE025Ic8sEoEyarwLSYuR88TdVrkYx02GTMU"
 };
 
 // ===== قواعد عرض العناوين =====
@@ -787,7 +788,7 @@ forwardBtn.addEventListener("click", (e) => {
   resetControlsTimer();
 });
 
-// جلب بيانات المسلسل
+// جلب بيانات ��لمسلسل
 Promise.all([
   fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}?api_key=${API_KEY}&language=en`).then(r => r.json()),
   fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}?api_key=${API_KEY}&language=ar`).then(r => r.json())
