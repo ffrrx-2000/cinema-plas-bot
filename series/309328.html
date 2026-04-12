@@ -697,11 +697,10 @@ const episodeLinks = {
     "1-7": "pRMKJhVYLB4ND8qqsczQM8JC01mm3fu3kchMQnBXM1sY",
     "1-8": "LZP0001iVGKTmkeosfX01cQEsjI00FhgzvON3VSVPDC7cmA",
     "1-9": "6MSGNdqDhfTKQ00M28OoS1oItfJdtmJIkT9gSgItkfGI",
-    "1-10": "v02dfQ019kJWU5JWeX02ZuV3mb01iRIuOmoPaowVW30154Cs"
+    "1-10": "v02dfQ019kJWU5JWeX02ZuV3mb01iRIuOmoPaowVW30154Cs",
+    "1-11": "j9egFCGxo00EdDPo3dsQf8spguix5mWgFlo01xpMxyUyw"
 };
 
-// ===== قواعد عرض العناوين =====
-// اللغات التي تُكتب بالإنجليزي فقط: كوري، ياباني، صيني، هندي
 const FORCE_ENGLISH_LANGUAGES = ['ko', 'ja', 'zh', 'hi', 'ta', 'te', 'ml', 'bn'];
 const FORCE_ENGLISH_COUNTRIES = ['KR', 'JP', 'CN', 'TW', 'HK', 'IN'];
 
@@ -714,12 +713,10 @@ function determineTitleDisplay(data, arabicData) {
   let primary = '';
   let secondary = null;
   
-  // كوري/ياباني/صيني/هندي = إنجليزي فقط
   if (FORCE_ENGLISH_LANGUAGES.includes(originalLang) || originCountry.some(c => FORCE_ENGLISH_COUNTRIES.includes(c))) {
     primary = englishTitle;
     secondary = null;
   }
-  // باقي اللغات (عربي، تركي، إنجليزي، فرنسي الخ) = اللغة الأصلية
   else {
     primary = originalTitle || englishTitle;
     if (englishTitle && englishTitle !== originalTitle && originalTitle) {
@@ -731,14 +728,14 @@ function determineTitleDisplay(data, arabicData) {
 }
 
 let currentSeason = 1;
-  let isFullscreen = false;
-  let controlsVisible = true;
-  let controlsTimeout;
-  let hls = null;
-  let currentQualityLevels = [];
-  let seriesPosterUrl = ''; // متغير لحفظ صورة البوستر
-  let currentAspectMode = 0; // لتتبع وضع العرض الحالي
-  const aspectModes = ['contain', 'cover', 'fill']; // أوضاع العرض المختلفة
+let isFullscreen = false;
+let controlsVisible = true;
+let controlsTimeout;
+let hls = null;
+let currentQualityLevels = [];
+let seriesPosterUrl = '';
+let currentAspectMode = 0;
+const aspectModes = ['contain', 'cover', 'fill'];
 
 const videoModal = document.getElementById("videoModal");
 const watchNowBtn = document.getElementById("watchNowBtn");
@@ -773,25 +770,52 @@ forwardBtn.addEventListener("click", (e) => {
   resetControlsTimer();
 });
 
-// جلب بيانات ��لمسلسل
+const genreTranslations = {
+  "Action": "اكشن",
+  "Adventure": "مغامرة",
+  "Animation": "رسوم متحركة",
+  "Comedy": "كوميديا",
+  "Crime": "جريمة",
+  "Documentary": "وثائقي",
+  "Drama": "دراما",
+  "Family": "عائلي",
+  "Fantasy": "فانتازيا",
+  "History": "تاريخي",
+  "Horror": "رعب",
+  "Music": "موسيقي",
+  "Mystery": "غموض",
+  "Romance": "رومانسي",
+  "Science Fiction": "خيال علمي",
+  "Sci-Fi & Fantasy": "خيال علمي وفانتازيا",
+  "TV Movie": "فيلم تلفزيوني",
+  "Thriller": "اثارة",
+  "War": "حرب",
+  "Western": "غربي",
+  "Action & Adventure": "اكشن ومغامرة",
+  "Kids": "اطفال",
+  "News": "اخبار",
+  "Reality": "واقعي",
+  "Soap": "مسلسل درامي",
+  "Talk": "حواري",
+  "War & Politics": "حرب وسياسة"
+};
+
 Promise.all([
   fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}?api_key=${API_KEY}&language=en`).then(r => r.json()),
   fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}?api_key=${API_KEY}&language=ar`).then(r => r.json())
 ]).then(([enData, arData]) => {
   const titles = determineTitleDisplay(enData, arData);
   
-  // جلب صورة البوستر للخلفية
   fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}/images?api_key=${API_KEY}`)
   .then(res => res.json())
   .then(images => {
-  const cleanPoster = images.posters.find(p => p.iso_639_1 === null);
-  const imagePath = cleanPoster ? cleanPoster.file_path : enData.poster_path;
-  if (imagePath) {
-  document.getElementById("moviePage").style.backgroundImage = `url(https://image.tmdb.org/t/p/original${imagePath})`;
-  }
+    const cleanPoster = images.posters.find(p => p.iso_639_1 === null);
+    const imagePath = cleanPoster ? cleanPoster.file_path : enData.poster_path;
+    if (imagePath) {
+      document.getElementById("moviePage").style.backgroundImage = `url(https://image.tmdb.org/t/p/original${imagePath})`;
+    }
   });
 
-  // حفظ صورة الخلفية الأفقية (backdrop) لاستخدامها في المشغل
   const backdropPath = enData.backdrop_path;
   if (backdropPath) {
     seriesPosterUrl = `https://image.tmdb.org/t/p/w1280${backdropPath}`;
@@ -801,36 +825,6 @@ Promise.all([
   
   document.getElementById("imdbRating").textContent = enData.vote_average.toFixed(1);
   
-  // ترجمة التصنيفات إلى العربية
-  const genreTranslations = {
-    "Action": "اكشن",
-    "Adventure": "مغامرة",
-    "Animation": "رسوم متحركة",
-    "Comedy": "كوميديا",
-    "Crime": "جريمة",
-    "Documentary": "وثائقي",
-    "Drama": "دراما",
-    "Family": "عائلي",
-    "Fantasy": "فانتازيا",
-    "History": "تاريخي",
-    "Horror": "رعب",
-    "Music": "موسيقي",
-    "Mystery": "غموض",
-    "Romance": "رومانسي",
-    "Science Fiction": "خيال علمي",
-    "Sci-Fi & Fantasy": "خيال علمي وفانتازيا",
-    "TV Movie": "فيلم تلفزيوني",
-    "Thriller": "اثارة",
-    "War": "حرب",
-    "Western": "غربي",
-    "Action & Adventure": "اكشن ومغامرة",
-    "Kids": "اطفال",
-    "News": "اخبار",
-    "Reality": "واقعي",
-    "Soap": "مسلسل درامي",
-    "Talk": "حواري",
-    "War & Politics": "حرب وسياسة"
-  };
   const genres = enData.genres.map(g => genreTranslations[g.name] || g.name).join(" . ");
   document.getElementById("yearGenre").textContent = `${enData.first_air_date.slice(0,4)} . ${genres}`;
   document.getElementById("seasons").textContent = `${enData.number_of_seasons} مواسم . ${enData.number_of_episodes} حلقة`;
@@ -840,7 +834,6 @@ Promise.all([
   displaySeasons(enData.seasons);
 });
 
-// جلب الممثلين
 fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}/credits?api_key=${API_KEY}&language=ar`)
   .then(res => res.json())
   .then(credits => {
@@ -950,7 +943,6 @@ function playEpisode(videoUrl, title) {
   document.getElementById("videoModal").classList.add("active");
   document.getElementById("videoTitle").textContent = title;
   
-  // تعيين صورة البوستر كخلفية قبل التشغيل
   if (seriesPosterUrl) {
     videoPlayer.poster = seriesPosterUrl;
   }
@@ -1042,7 +1034,6 @@ qualityBtn.addEventListener('click', function(e) {
   resetControlsTimer();
 });
 
-// الإعلانات
 fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}/videos?api_key=${API_KEY}`)
   .then(res => res.json())
   .then(data => {
@@ -1119,86 +1110,15 @@ progressContainer.addEventListener("click", (e) => {
   resetControlsTimer();
 });
 
-function formatTime(time) {
-  const m = Math.floor(time / 60);
-  const s = Math.floor(time % 60);
-  return `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
-}
-
-fullscreenBtn.addEventListener("click", function(e) {
-  e.stopPropagation();
-  toggleFullscreen();
-});
-
-function toggleFullscreen() {
-  if (!isFullscreen) {
-    if (videoPlayerWrapper.requestFullscreen) {
-      videoPlayerWrapper.requestFullscreen();
-    } else if (videoPlayerWrapper.mozRequestFullScreen) {
-      videoPlayerWrapper.mozRequestFullScreen();
-    } else if (videoPlayerWrapper.webkitRequestFullscreen) {
-      videoPlayerWrapper.webkitRequestFullscreen();
-    } else if (videoPlayerWrapper.msRequestFullscreen) {
-      videoPlayerWrapper.msRequestFullscreen();
-    }
-    
-    videoPlayerWrapper.classList.add("fullscreen");
-    fullscreenBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
-    isFullscreen = true;
-    
-  } else {
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
-    } else if (document.mozCancelFullScreen) {
-      document.mozCancelFullScreen();
-    } else if (document.webkitExitFullscreen) {
-      document.webkitExitFullscreen();
-    } else if (document.msExitFullscreen) {
-      document.msExitFullscreen();
-    }
-    
-    videoPlayerWrapper.classList.remove("fullscreen");
-    fullscreenBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
-    isFullscreen = false;
-  }
-  
-  resetControlsTimer();
-}
-
-aspectBtn.addEventListener("click", function(e) {
-  e.stopPropagation();
-  if (videoPlayer.style.objectFit === "cover") {
-    videoPlayer.style.objectFit = "contain";
-    aspectBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
-  } else {
-    videoPlayer.style.objectFit = "cover";
-    aspectBtn.innerHTML = '<i class="fa-solid fa-tv"></i>';
-  }
-  resetControlsTimer();
-});
-
-document.addEventListener('fullscreenchange', handleFullscreenChange);
-document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-document.addEventListener('MSFullscreenChange', handleFullscreenChange);
-
-function handleFullscreenChange() {
-  if (!document.fullscreenElement && 
-      !document.webkitFullscreenElement && 
-      !document.mozFullScreenElement && 
-      !document.msFullscreenElement) {
-    
-    videoPlayerWrapper.classList.remove("fullscreen");
-    fullscreenBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
-    isFullscreen = false;
-    showControls();
-  }
+function formatTime(seconds) {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return mins.toString().padStart(2, '0') + ':' + secs.toString().padStart(2, '0');
 }
 
 function showControls() {
   videoControls.classList.remove('hidden');
   controlsVisible = true;
-  resetControlsTimer();
 }
 
 function hideControls() {
@@ -1209,131 +1129,54 @@ function hideControls() {
 }
 
 function resetControlsTimer() {
-  clearTimeout(controlsTimeout);
-  controlsTimeout = setTimeout(() => {
-    if (!videoPlayer.paused) {
-      hideControls();
-    }
-  }, 5000);
-}
-
-videoPlayerWrapper.addEventListener('click', function(e) {
-  if (e.target.closest('.video-controls')) {
-    return;
-  }
-  
-  if (controlsVisible) {
-    hideControls();
-  } else {
-    showControls();
-  }
-});
-
-videoPlayerWrapper.addEventListener('mousemove', function() {
   showControls();
-});
+  clearTimeout(controlsTimeout);
+  controlsTimeout = setTimeout(hideControls, 3000);
+}
 
-videoPlayerWrapper.addEventListener('touchstart', function(e) {
-  if (e.target.closest('.video-controls')) {
-    return;
-  }
-  
-  if (controlsVisible) {
-    hideControls();
-  } else {
-    showControls();
-  }
-});
-
-videoControls.addEventListener('mousemove', function(e) {
-  e.stopPropagation();
-  resetControlsTimer();
-});
-
-videoControls.addEventListener('click', function(e) {
-  e.stopPropagation();
-  resetControlsTimer();
-});
-
-videoPlayer.addEventListener('play', function() {
-  resetControlsTimer();
-});
-
-// جلب شعار المسلسل
-fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}/images?api_key=${API_KEY}`)
-  .then(res => res.json())
-  .then(images => {
-    const logo = images.logos.find(l => l.iso_639_1 === "en") || images.logos[0];
-    const logoContainer = document.getElementById("seriesLogo");
-    if (logo && logo.file_path) {
-      logoContainer.innerHTML = `<img src="https://image.tmdb.org/t/p/original${logo.file_path}" alt="Series Logo">`;
+videoPlayerWrapper.addEventListener('click', (e) => {
+  if (e.target === videoPlayer || e.target === videoPlayerWrapper) {
+    if (controlsVisible) {
+      togglePlay(e);
     } else {
-      logoContainer.style.display = "none";
+      showControls();
+      resetControlsTimer();
     }
+  }
+});
+
+fullscreenBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (!isFullscreen) {
+    videoPlayerWrapper.classList.add('fullscreen');
+    isFullscreen = true;
+    fullscreenBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
+  } else {
+    videoPlayerWrapper.classList.remove('fullscreen');
+    isFullscreen = false;
+    fullscreenBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
+  }
+  resetControlsTimer();
+});
+
+aspectBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  currentAspectMode = (currentAspectMode + 1) % aspectModes.length;
+  videoPlayer.style.objectFit = aspectModes[currentAspectMode];
+  resetControlsTimer();
+});
+
+fetch(`https://api.themoviedb.org/3/tv/${SERIES_ID}/recommendations?api_key=${API_KEY}&language=ar`)
+  .then(res => res.json())
+  .then(data => {
+    const recommendations = document.getElementById("recommendations");
+    data.results.slice(0, 10).forEach(show => {
+      const card = document.createElement("div");
+      card.className = "recommend-card";
+      card.innerHTML = `<img src="${show.poster_path ? `https://image.tmdb.org/t/p/w500${show.poster_path}` : 'https://g.top4top.io/p_34489upmc7.jpg'}" alt="${show.name}">`;
+      recommendations.appendChild(card);
+    });
   });
-
-// LocalStorage للإعجاب والمشاهدة لاحقًا
-function saveToLocalStorage(key, value) {
-  try { localStorage.setItem(key, JSON.stringify(value)); } catch(e) {}
-}
-function loadFromLocalStorage(key) {
-  try { return JSON.parse(localStorage.getItem(key)) || null; } catch(e) { return null; }
-}
-
-likeBtn.addEventListener('click', () => {
-  const saved = loadFromLocalStorage('likedSeries') || [];
-  const icon = likeBtn.querySelector('i');
-  if (likeBtn.classList.contains('active')) {
-    likeBtn.classList.remove('active');
-    icon.classList.replace('fa-solid', 'fa-regular');
-    const idx = saved.indexOf(SERIES_ID);
-    if (idx > -1) saved.splice(idx, 1);
-  } else {
-    likeBtn.classList.add('active');
-    icon.classList.replace('fa-regular', 'fa-solid');
-    if (!saved.includes(SERIES_ID)) saved.push(SERIES_ID);
-  }
-  saveToLocalStorage('likedSeries', saved);
-});
-
-watchLaterBtn.addEventListener('click', () => {
-  const saved = loadFromLocalStorage('watchLaterSeries') || [];
-  const icon = watchLaterBtn.querySelector('i');
-  if (watchLaterBtn.classList.contains('active')) {
-    watchLaterBtn.classList.remove('active');
-    icon.classList.replace('fa-solid', 'fa-regular');
-    const idx = saved.indexOf(SERIES_ID);
-    if (idx > -1) saved.splice(idx, 1);
-  } else {
-    watchLaterBtn.classList.add('active');
-    icon.classList.replace('fa-regular', 'fa-solid');
-    if (!saved.includes(SERIES_ID)) saved.push(SERIES_ID);
-  }
-  saveToLocalStorage('watchLaterSeries', saved);
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-  const savedLikes = loadFromLocalStorage('likedSeries') || [];
-  const savedWatchLater = loadFromLocalStorage('watchLaterSeries') || [];
-  if (savedLikes.includes(SERIES_ID)) {
-    likeBtn.classList.add('active');
-    likeBtn.querySelector('i').classList.replace('fa-regular', 'fa-solid');
-  }
-  if (savedWatchLater.includes(SERIES_ID)) {
-    watchLaterBtn.classList.add('active');
-    watchLaterBtn.querySelector('i').classList.replace('fa-regular', 'fa-solid');
-  }
-});
-
-document.addEventListener('keydown', function(e) {
-  if (videoModal.classList.contains('active')) {
-    if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
-    else if (e.code === 'Escape' && isFullscreen) toggleFullscreen();
-    else if (e.code === 'KeyF') toggleFullscreen();
-    else if (e.code === 'ArrowRight') { videoPlayer.currentTime = Math.min(videoPlayer.duration, videoPlayer.currentTime + 10); showControls(); }
-    else if (e.code === 'ArrowLeft') { videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 10); showControls(); }
-  }
-});
 </script>
 </body>
 </html>
