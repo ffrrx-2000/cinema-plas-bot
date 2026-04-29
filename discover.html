@@ -4193,6 +4193,81 @@
       type: null 
     };
 
+    // تطبيع النص لتسهيل المطابقة بين العربي والإنجليزي
+    function normalizeGenreText(text) {
+      return String(text || '')
+        .toLowerCase()
+        .replace(/&/g, ' and ')
+        .replace(/[-_/]/g, ' ')
+        .replace(/[\u2010-\u2015]/g, ' ')
+        .replace(/[^\w\u0600-\u06FF]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    // مرادفات التصنيفات العربية/الإنجليزية
+    const genreAliases = {
+      'أكشن': ['Action', 'Action & Adventure', 'Adventure', 'حركة', 'حركة ومغامرة'],
+      'Action': ['أكشن', 'Action & Adventure', 'Adventure'],
+      'حركة': ['Action', 'Action & Adventure', 'Adventure', 'أكشن'],
+      'حركة ومغامرة': ['Action', 'Action & Adventure', 'Adventure', 'أكشن'],
+      'رعب': ['Horror'],
+      'Horror': ['رعب'],
+      'دراما': ['Drama'],
+      'Drama': ['دراما'],
+      'كوميديا': ['Comedy'],
+      'Comedy': ['كوميديا'],
+      'جريمة': ['Crime'],
+      'Crime': ['جريمة'],
+      'مغامرة': ['Adventure', 'Action & Adventure'],
+      'Adventure': ['مغامرة', 'Action & Adventure'],
+      'إثارة': ['Thriller'],
+      'اثارة': ['Thriller'],
+      'Thriller': ['إثارة', 'اثارة'],
+      'غموض': ['Mystery'],
+      'Mystery': ['غموض'],
+      'رومانسي': ['Romance'],
+      'Romance': ['رومانسي'],
+      'عائلي': ['Family'],
+      'Family': ['عائلي'],
+      'رسوم متحركة': ['Animation'],
+      'Animation': ['رسوم متحركة'],
+      'وثائقي': ['Documentary'],
+      'Documentary': ['وثائقي'],
+      'خيال علمي': ['Science Fiction', 'Sci-Fi', 'Science Fiction & Fantasy', 'Sci Fi'],
+      'Science Fiction': ['خيال علمي', 'Sci-Fi', 'Science Fiction & Fantasy', 'Sci Fi'],
+      'Sci-Fi': ['خيال علمي', 'Science Fiction', 'Science Fiction & Fantasy', 'Sci Fi'],
+      'Sci Fi': ['خيال علمي', 'Science Fiction', 'Science Fiction & Fantasy', 'Sci-Fi'],
+      'خيال علمي وفانتازيا': ['Science Fiction', 'Sci-Fi & Fantasy', 'Fantasy'],
+      'Science Fiction & Fantasy': ['خيال علمي وفانتازيا', 'Fantasy', 'Sci-Fi & Fantasy'],
+      'فانتازيا': ['Fantasy'],
+      'Fantasy': ['فانتازيا', 'خيال علمي وفانتازيا'],
+      'حرب': ['War'],
+      'War': ['حرب'],
+      'حرب وسياسة': ['War', 'Politics'],
+      'Politics': ['حرب وسياسة']
+    };
+
+    function genreMatches(selectedGenre, cardGenre) {
+      if (!selectedGenre || !cardGenre) return false;
+
+      const selectedNorm = normalizeGenreText(selectedGenre);
+      const cardNorm = normalizeGenreText(cardGenre);
+
+      if (selectedNorm === cardNorm) return true;
+
+      const selectedVariants = new Set([selectedGenre, ...(genreAliases[selectedGenre] || [])].map(normalizeGenreText));
+      const cardVariants = new Set([cardGenre, ...(genreAliases[cardGenre] || [])].map(normalizeGenreText));
+
+      if (selectedVariants.has(cardNorm) || cardVariants.has(selectedNorm)) return true;
+
+      for (const s of selectedVariants) {
+        if (cardVariants.has(s)) return true;
+      }
+
+      return false;
+    }
+
     // تحديث عدد الفلاتر المختارة
     function updateFilterCount() {
       const count = selectedFilters.genre.size + 
@@ -4217,7 +4292,7 @@
         if (!e.target.classList.contains('filter-option')) return;
         
         const g = group.dataset.group;
-        const optionText = e.target.textContent;
+        const optionText = e.target.textContent.trim();
         
         if (g === 'genre') {
           e.target.classList.toggle('active');
@@ -4262,16 +4337,18 @@
       
       allCards.forEach(card => {
         const title = card.querySelector('.card-details-title')?.textContent?.toLowerCase() || '';
-        const genres = card.dataset.genre ? card.dataset.genre.split('|') : [];
+        const genres = card.dataset.genre ? card.dataset.genre.split('|').map(g => g.trim()) : [];
         const yearSpan = card.querySelector('.year');
         const year = yearSpan ? yearSpan.textContent.trim() : '';
         
         // تطابق البحث
         const searchMatch = title.includes(term);
         
-        // تطابق التصنيف
+        // تطابق التصنيف: يقبل العربي والإنجليزي معًا
         const genreMatch = selectedFilters.genre.size === 0 || 
-                          genres.some(genre => selectedFilters.genre.has(genre));
+          [...selectedFilters.genre].some(selectedGenre => 
+            genres.some(cardGenre => genreMatches(selectedGenre, cardGenre))
+          );
         
         // تطابق السنة
         const yearMatch = !selectedFilters.year || year === selectedFilters.year;
@@ -4312,8 +4389,6 @@
 
     // تحديث عدد الفلاتر عند التحميل
     updateFilterCount();
-
-
   </script>
 </body>
 </html>
