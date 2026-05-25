@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>سجل المشاهدة - Cinema Plus</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+
+:root { 
+    --accent-color: #ff3333; 
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: #0a0a0a;
+    color: white;
+    direction: rtl;
+    font-family: 'Tajawal', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 20px;
+}
+
+/* Header */
+.page-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: rgba(10,10,10,0.95);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.back-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.page-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.header-actions {
+    margin-right: auto;
+    display: flex;
+    gap: 10px;
+}
+
+.clear-btn {
+    font-size: 13px;
+    color: var(--accent-color);
+    background: rgba(255,51,51,0.1);
+    border: 1px solid rgba(255,51,51,0.3);
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.item-count {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.08);
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+
+/* Grid */
+.items-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 16px;
+}
+
+.item-card {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #1c1c1c;
+    text-decoration: none;
+    display: block;
+}
+
+.item-card img {
+    width: 100%;
+    aspect-ratio: 2/3;
+    object-fit: cover;
+    display: block;
+}
+
+.item-card .card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%);
+    display: flex;
+    align-items: flex-end;
+    padding: 10px 8px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.item-card:active .card-overlay {
+    opacity: 1;
+}
+
+.item-info {
+    width: 100%;
+}
+
+.item-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+}
+
+.watched-date {
+    font-size: 9px;
+    color: rgba(255,255,255,0.5);
+}
+
+/* Remove button */
+.remove-btn {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.7);
+    border: none;
+    color: #fff;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 10;
+}
+
+.item-card:active .remove-btn,
+.item-card:hover .remove-btn {
+    opacity: 1;
+}
+
+.remove-btn:active {
+    background: var(--accent-color);
+}
+
+/* Empty state */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    gap: 16px;
+    color: rgba(255,255,255,0.4);
+    text-align: center;
+    padding: 20px;
+}
+
+.empty-state i {
+    font-size: 60px;
+    color: rgba(255,255,255,0.15);
+}
+
+.empty-state h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.6);
+}
+
+.empty-state p {
+    font-size: 14px;
+    max-width: 260px;
+}
+
+.browse-btn {
+    margin-top: 10px;
+    padding: 12px 28px;
+    background: var(--accent-color);
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+</style>
+</head>
+<body>
+
+<header class="page-header">
+    <a href="index.html" class="back-btn">
+        <i class="fa-solid fa-arrow-right"></i>
+    </a>
+    <h1 class="page-title">سجل المشاهدة</h1>
+    <div class="header-actions">
+        <span class="item-count" id="itemCount">0 عنصر</span>
+        <button class="clear-btn" id="clearBtn" onclick="clearHistory()">مسح الكل</button>
+    </div>
+</header>
+
+<main>
+    <div class="items-grid" id="itemsGrid"></div>
+    <div class="empty-state" id="emptyState" style="display: none;">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <h3>لا يوجد سجل مشاهدة</h3>
+        <p>ستظهر هنا الأفلام التي شاهدتها</p>
+        <a href="index.html" class="browse-btn">تصفح الأفلام</a>
+    </div>
+</main>
+
+<script>
+function loadHistory() {
+    const history = JSON.parse(localStorage.getItem('watchedHistory')) || [];
+    const grid = document.getElementById('itemsGrid');
+    const emptyState = document.getElementById('emptyState');
+    const itemCount = document.getElementById('itemCount');
+    const clearBtn = document.getElementById('clearBtn');
+    
+    grid.innerHTML = '';
+    
+    if (history.length === 0) {
+        emptyState.style.display = 'flex';
+        grid.style.display = 'none';
+        itemCount.textContent = '0 عنصر';
+        clearBtn.style.display = 'none';
+        return;
+    }
+    
+    emptyState.style.display = 'none';
+    grid.style.display = 'grid';
+    clearBtn.style.display = 'block';
+    itemCount.textContent = history.length + ' عنصر';
+    
+    history.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        
+        const watchedDate = item.watchedAt ? formatDate(item.watchedAt) : '';
+        
+        card.innerHTML = `
+            <a href="movie.html?tmdb=${item.id}">
+                <img src="${item.poster || 'https://via.placeholder.com/200x300/1c1c1c/666?text=No+Image'}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/200x300/1c1c1c/666?text=No+Image'">
+                <div class="card-overlay">
+                    <div class="item-info">
+                        <div class="item-title">${item.title || 'بدون عنوان'}</div>
+                        <div class="watched-date">${watchedDate}</div>
+                    </div>
+                </div>
+            </a>
+            <button class="remove-btn" onclick="removeItem(${index}, event)">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+function formatDate(isoString) {
+    const date = new Date(isoString);
+    const now = new Date();
+    const diff = (now - date) / 1000;
+    
+    if (diff < 60) return 'الآن';
+    if (diff < 3600) return `منذ ${Math.floor(diff/60)} دقيقة`;
+    if (diff < 86400) return `منذ ${Math.floor(diff/3600)} ساعة`;
+    if (diff < 604800) return `منذ ${Math.floor(diff/86400)} يوم`;
+    
+    return date.toLocaleDateString('ar-SA');
+}
+
+function removeItem(index, event) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    let history = JSON.parse(localStorage.getItem('watchedHistory')) || [];
+    history.splice(index, 1);
+    localStorage.setItem('watchedHistory', JSON.stringify(history));
+    loadHistory();
+}
+
+function clearHistory() {
+    if (confirm('هل أنت متأكد من مسح سجل المشاهدة بالكامل؟')) {
+        localStorage.removeItem('watchedHistory');
+        loadHistory();
+    }
+}
+
+document.addEventListener('DOMContentLoaded', loadHistory);
+</script>
+
+</body>
+</html>
