@@ -5572,22 +5572,23 @@ document.addEventListener('click', function(e) {
 
 <!-- ===== BOTTOM NAVIGATION ===== -->
 <nav class="bottom-nav">
-  <a href="index.html" class="nav-item">
-    <i class="fa-solid fa-house"></i>
-    <span>الرئيسية</span>
-  </a>
-  <a href="discover.html" class="nav-item active">
-    <i class="fa-solid fa-table-cells"></i>
-    <span>الأقسام</span>
-  </a>
-  <a href="search.html" class="nav-item">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span>بحث</span>
-  </a>
-  <a href="index.html#account" class="nav-item">
-    <i class="fa-regular fa-user"></i>
-    <span>الحساب</span>
-  </a>
+<a class="nav-item" href="index.html">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M3 10.5L12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1 1V10.5z"></path>
+</svg>
+<span>الرئيسية</span>
+</a>
+<a class="nav-item active" href="#">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle cx="12" cy="12" r="9"></circle>
+<path d="M14.5 9.5L13 14.5 9 16 10.5 11 14.5 9.5z"></path>
+</svg>
+<span>اكتشف</span>
+</a>
+<a class="nav-item" href="go:1460">
+<img alt="حسابي" class="user-thumb" id="accountThumb" src="https://g.top4top.io/p_3574zk5bb1.jpg"/>
+<span>حسابي</span>
+</a>
 </nav>
 
 </body>
