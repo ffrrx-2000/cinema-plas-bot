@@ -62,27 +62,12 @@ body {
     color: #fff;
 }
 
-.header-actions {
-    margin-right: auto;
-    display: flex;
-    gap: 10px;
-}
-
-.clear-btn {
-    font-size: 13px;
-    color: var(--accent-color);
-    background: rgba(255,51,51,0.1);
-    border: 1px solid rgba(255,51,51,0.3);
-    padding: 6px 14px;
-    border-radius: 20px;
-    cursor: pointer;
-}
-
 .item-count {
+    margin-right: auto;
     font-size: 13px;
     color: rgba(255,255,255,0.5);
     background: rgba(255,255,255,0.08);
-    padding: 6px 12px;
+    padding: 4px 12px;
     border-radius: 20px;
 }
 
@@ -139,9 +124,12 @@ body {
     margin-bottom: 4px;
 }
 
-.watched-date {
-    font-size: 9px;
-    color: rgba(255,255,255,0.5);
+.item-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: rgba(255,255,255,0.6);
 }
 
 /* Remove button */
@@ -225,58 +213,48 @@ body {
         <i class="fa-solid fa-arrow-right"></i>
     </a>
     <h1 class="page-title">سجل المشاهدة</h1>
-    <div class="header-actions">
-        <span class="item-count" id="itemCount">0 عنصر</span>
-        <button class="clear-btn" id="clearBtn" onclick="clearHistory()">مسح الكل</button>
-    </div>
+    <span class="item-count" id="itemCount">0 عنصر</span>
 </header>
 
 <main>
     <div class="items-grid" id="itemsGrid"></div>
     <div class="empty-state" id="emptyState" style="display: none;">
         <i class="fa-solid fa-clock-rotate-left"></i>
-        <h3>لا يوجد سجل مشاهدة</h3>
-        <p>ستظهر هنا الأفلام التي شاهدتها</p>
+        <h3>لا توجد أفلام في سجل المشاهدة</h3>
+        <p>الأفلام التي تشاهدها ستظهر هنا</p>
         <a href="index.html" class="browse-btn">تصفح الأفلام</a>
     </div>
 </main>
 
 <script>
-function loadHistory() {
-    const history = JSON.parse(localStorage.getItem('watchedHistory')) || [];
+function loadWatchHistory() {
+    const watchHistory = JSON.parse(localStorage.getItem('watchHistory')) || [];
     const grid = document.getElementById('itemsGrid');
     const emptyState = document.getElementById('emptyState');
     const itemCount = document.getElementById('itemCount');
-    const clearBtn = document.getElementById('clearBtn');
     
     grid.innerHTML = '';
     
-    if (history.length === 0) {
+    if (watchHistory.length === 0) {
         emptyState.style.display = 'flex';
         grid.style.display = 'none';
         itemCount.textContent = '0 عنصر';
-        clearBtn.style.display = 'none';
         return;
     }
     
     emptyState.style.display = 'none';
     grid.style.display = 'grid';
-    clearBtn.style.display = 'block';
-    itemCount.textContent = history.length + ' عنصر';
+    itemCount.textContent = watchHistory.length + ' عنصر';
     
-    history.forEach((item, index) => {
+    watchHistory.forEach((item, index) => {
         const card = document.createElement('div');
         card.className = 'item-card';
-        
-        const watchedDate = item.watchedAt ? formatDate(item.watchedAt) : '';
-        
         card.innerHTML = `
             <a href="movie.html?tmdb=${item.id}">
                 <img src="${item.poster || 'https://via.placeholder.com/200x300/1c1c1c/666?text=No+Image'}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/200x300/1c1c1c/666?text=No+Image'">
                 <div class="card-overlay">
                     <div class="item-info">
                         <div class="item-title">${item.title || 'بدون عنوان'}</div>
-                        <div class="watched-date">${watchedDate}</div>
                     </div>
                 </div>
             </a>
@@ -288,37 +266,17 @@ function loadHistory() {
     });
 }
 
-function formatDate(isoString) {
-    const date = new Date(isoString);
-    const now = new Date();
-    const diff = (now - date) / 1000;
-    
-    if (diff < 60) return 'الآن';
-    if (diff < 3600) return `منذ ${Math.floor(diff/60)} دقيقة`;
-    if (diff < 86400) return `منذ ${Math.floor(diff/3600)} ساعة`;
-    if (diff < 604800) return `منذ ${Math.floor(diff/86400)} يوم`;
-    
-    return date.toLocaleDateString('ar-SA');
-}
-
 function removeItem(index, event) {
     event.preventDefault();
     event.stopPropagation();
     
-    let history = JSON.parse(localStorage.getItem('watchedHistory')) || [];
-    history.splice(index, 1);
-    localStorage.setItem('watchedHistory', JSON.stringify(history));
-    loadHistory();
+    let watchHistory = JSON.parse(localStorage.getItem('watchHistory')) || [];
+    watchHistory.splice(index, 1);
+    localStorage.setItem('watchHistory', JSON.stringify(watchHistory));
+    loadWatchHistory();
 }
 
-function clearHistory() {
-    if (confirm('هل أنت متأكد من مسح سجل المشاهدة بالكامل؟')) {
-        localStorage.removeItem('watchedHistory');
-        loadHistory();
-    }
-}
-
-document.addEventListener('DOMContentLoaded', loadHistory);
+document.addEventListener('DOMContentLoaded', loadWatchHistory);
 </script>
 
 </body>
