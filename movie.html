@@ -922,6 +922,9 @@ function updateQualitySelection() {
 }
 
 watchNowBtn.addEventListener("click", () => {
+  // حفظ الفيلم في سجل المشاهدة
+  addToWatchHistory();
+  
   videoModal.classList.add("active");
   
   const defaultQuality = "1080";
@@ -1713,6 +1716,36 @@ setTimeout(() => {
         saveMovieDataToStorage();
     }
 }, 2000);
+
+// دالة إضافة الفيلم إلى سجل المشاهدة
+function addToWatchHistory() {
+    try {
+        let watchHistory = JSON.parse(localStorage.getItem('watchHistory')) || [];
+        
+        // إزالة الفيلم إذا كان موجوداً مسبقاً (لنقله لأعلى القائمة)
+        watchHistory = watchHistory.filter(item => item.id !== movieData.id);
+        
+        // إضافة الفيلم في بداية القائمة
+        const movieToSave = {
+            id: movieData.id,
+            title: movieData.title,
+            poster: movieData.poster || movieData.backdrop,
+            watchedAt: new Date().toISOString()
+        };
+        
+        watchHistory.unshift(movieToSave);
+        
+        // الاحتفاظ بآخر 50 فيلم فقط
+        if (watchHistory.length > 50) {
+            watchHistory = watchHistory.slice(0, 50);
+        }
+        
+        localStorage.setItem('watchHistory', JSON.stringify(watchHistory));
+        console.log('تم حفظ الفيلم في سجل المشاهدة:', movieData.title);
+    } catch (error) {
+        console.error('خطأ في حفظ سجل المشاهدة:', error);
+    }
+}
 
 </script>
 
