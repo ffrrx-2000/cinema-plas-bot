@@ -105,26 +105,945 @@
         /* نهاية تنسيقات القائمة السفلية الحديثة     */
         /* ========================================= */
         
-        /* ===== START: SLIDER STYLES ===== */
-        .slider-wrapper {
+        /* ===== HEADER ===== */
+        /* ===== HEADER OVERLAY FADE ===== */
+        .app-header {
+            position: relative;
             display: flex;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            width: 100%;
-            height: 78vh;
-            margin-bottom: 15px;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px 10px 16px;
+            background: transparent;
+            z-index: 20;
+            /* يطفو فوق السلايدر */
+            margin-bottom: -56px;
         }
-        .slider-wrapper::-webkit-scrollbar { display: none; }
+
+        /* تلاشي مدرج شفاف خلف الهيدر */
+        .header-fade {
+            position: relative;
+            height: 56px;
+            background: linear-gradient(
+                to bottom,
+                rgba(10,10,10,0.82) 0%,
+                rgba(10,10,10,0.45) 45%,
+                rgba(10,10,10,0) 100%
+            );
+            z-index: 19;
+            margin-bottom: -56px;
+            pointer-events: none;
+        }
+
+        .app-logo-text {
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            color: #fff;
+            font-family: 'Arial Black', Arial, sans-serif;
+            text-transform: uppercase;
+        }
+        .app-logo-text span {
+            color: var(--accent-color);
+        }
+
+        /* زر الإشعارات */
+        .notif-btn {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+            border: 1.5px solid rgba(255,255,255,0.12);
+            color: #fff;
+            font-size: 17px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .notif-btn:active { background: rgba(255,255,255,0.18); }
+
+        /* أزرار الهيدر */
+        .header-right-btns {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* زر الحساب في الهيدر */
+        .account-btn {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+            border: 1.5px solid rgba(255,255,255,0.12);
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+            overflow: hidden;
+        }
+        .account-btn:active { background: rgba(255,255,255,0.18); }
+        .header-account-thumb {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* ===== ACCOUNT PANEL ===== */
+        .account-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 9998;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .account-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .account-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: min(340px, 92vw);
+            height: 100%;
+            background: #111;
+            z-index: 9999;
+            transform: translateX(110%);
+            transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid rgba(255,255,255,0.08);
+        }
+        .account-panel.open { transform: translateX(0); }
+
+        .account-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 16px 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .account-panel-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .account-close-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+            border: none;
+            color: #fff;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .account-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 16px;
+        }
+        .account-content::-webkit-scrollbar { display: none; }
+
+        /* صورة الحساب الكبيرة */
+        .account-avatar-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .account-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--accent-color);
+            margin-bottom: 12px;
+        }
+        .account-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+        .account-email {
+            font-size: 13px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* قائمة خيارات الحساب */
+        .account-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .account-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.15s;
+            text-decoration: none;
+            color: #fff;
+        }
+        .account-menu-item:active { background: rgba(255,255,255,0.1); }
+        .account-menu-item i {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+            color: var(--accent-color);
+        }
+        .account-menu-item span {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .account-menu-item .menu-arrow {
+            margin-right: auto;
+            font-size: 12px;
+            color: rgba(255,255,255,0.3);
+        }
+
+        /* إحصائيات الحساب */
+        .account-stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 16px 0;
+            margin: 20px 0;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+        }
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .stat-number {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+        .stat-label {
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .notif-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            border: 1.5px solid #0a0a0a;
+            display: none;
+        }
+        .notif-badge.visible { display: block; }
+
+        /* ===== PROFILE SETTINGS MODAL ===== */
+        .profile-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .profile-modal-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .profile-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: min(400px, 92vw);
+            background: #151515;
+            border-radius: 20px;
+            z-index: 10001;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .profile-modal.open {
+            opacity: 1;
+            pointer-events: all;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .profile-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .profile-modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .profile-modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+            border: none;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-modal-content {
+            padding: 20px;
+        }
+
+        .profile-avatar-edit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .profile-avatar-wrapper {
+            position: relative;
+            margin-bottom: 10px;
+        }
+        .profile-avatar-large {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--accent-color);
+        }
+        .profile-avatar-edit-btn {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            border: 2px solid #151515;
+            color: #fff;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .profile-avatar-hint {
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .profile-form-group {
+            margin-bottom: 16px;
+        }
+        .profile-form-label {
+            display: block;
+            font-size: 13px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 6px;
+        }
+        .profile-form-input {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            font-family: 'Tajawal', sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .profile-form-input:focus {
+            border-color: var(--accent-color);
+        }
+        .profile-form-input::placeholder {
+            color: rgba(255,255,255,0.35);
+        }
+
+        .profile-save-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent-color);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            margin-top: 8px;
+            transition: opacity 0.2s;
+        }
+        .profile-save-btn:active {
+            opacity: 0.8;
+        }
+
+        /* ===== SETTINGS MODAL ===== */
+        .settings-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .settings-modal-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .settings-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: min(400px, 92vw);
+            max-height: 85vh;
+            background: #151515;
+            border-radius: 20px;
+            z-index: 10001;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+            overflow: hidden;
+        }
+        .settings-modal.open {
+            opacity: 1;
+            pointer-events: all;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .settings-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .settings-modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .settings-modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+            border: none;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .settings-modal-content {
+            padding: 16px 20px;
+            overflow-y: auto;
+            max-height: calc(85vh - 70px);
+        }
+        .settings-modal-content::-webkit-scrollbar { display: none; }
+
+        .settings-section {
+            margin-bottom: 20px;
+        }
+        .settings-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .settings-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+        .settings-item-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .settings-item-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-color);
+            font-size: 16px;
+        }
+        .settings-item-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .settings-item-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+        }
+        .settings-item-desc {
+            font-size: 11px;
+            color: rgba(255,255,255,0.45);
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 26px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 13px;
+            cursor: pointer;
+            transition: background 0.25s;
+        }
+        .toggle-switch.active {
+            background: var(--accent-color);
+        }
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            transition: transform 0.25s;
+        }
+        .toggle-switch.active::after {
+            transform: translateX(22px);
+        }
+
+        /* Theme Selector */
+        .theme-selector {
+            display: flex;
+            gap: 8px;
+        }
+        .theme-option {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+        .theme-option.light {
+            background: #f5f5f5;
+            color: #333;
+        }
+        .theme-option.dark {
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .theme-option.active {
+            border-color: var(--accent-color);
+        }
+
+        /* Delete Account Button */
+        .delete-account-btn {
+            width: 100%;
+            padding: 14px;
+            background: rgba(220, 38, 38, 0.15);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            border-radius: 12px;
+            color: #ef4444;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .delete-account-btn:active {
+            background: rgba(220, 38, 38, 0.25);
+        }
+
+        /* Confirm Delete Modal */
+        .confirm-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 10002;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .confirm-modal-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .confirm-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: min(340px, 88vw);
+            background: #1a1a1a;
+            border-radius: 16px;
+            z-index: 10003;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            text-align: center;
+            padding: 24px;
+        }
+        .confirm-modal.open {
+            opacity: 1;
+            pointer-events: all;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .confirm-modal-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(220, 38, 38, 0.15);
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: #ef4444;
+        }
+        .confirm-modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+        .confirm-modal-text {
+            font-size: 13px;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .confirm-modal-btns {
+            display: flex;
+            gap: 10px;
+        }
+        .confirm-btn-cancel {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+        }
+        .confirm-btn-delete {
+            flex: 1;
+            padding: 12px;
+            background: #ef4444;
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        /* Light Theme */
+        body.light-theme {
+            background-color: #f5f5f5;
+            color: #1a1a1a;
+        }
+        body.light-theme .bottom-nav {
+            background: rgba(255, 255, 255, 0.95);
+            border-top-color: #ddd;
+        }
+        body.light-theme .bottom-nav a.nav-item {
+            color: #666;
+        }
+        body.light-theme .bottom-nav a.nav-item.active {
+            color: var(--accent-color);
+        }
+        body.light-theme .nav-item svg {
+            stroke: #666;
+        }
+        body.light-theme .nav-item.active svg {
+            stroke: var(--accent-color);
+        }
+        body.light-theme .app-header {
+            background: rgba(245, 245, 245, 0.9);
+        }
+        body.light-theme .header-fade {
+            background: linear-gradient(to bottom, rgba(245,245,245,0.82) 0%, rgba(245,245,245,0.45) 45%, rgba(245,245,245,0) 100%);
+        }
+        body.light-theme .notif-btn,
+        body.light-theme .account-btn {
+            background: rgba(0,0,0,0.06);
+            border-color: rgba(0,0,0,0.1);
+            color: #333;
+        }
+        body.light-theme .notif-panel,
+        body.light-theme .account-panel {
+            background: #fff;
+            border-left-color: rgba(0,0,0,0.08);
+        }
+        body.light-theme .notif-panel-header,
+        body.light-theme .account-panel-header {
+            border-bottom-color: rgba(0,0,0,0.08);
+        }
+        body.light-theme .notif-panel-title,
+        body.light-theme .account-panel-title,
+        body.light-theme .account-name {
+            color: #1a1a1a;
+        }
+        body.light-theme .account-menu-item {
+            background: rgba(0,0,0,0.04);
+            color: #1a1a1a;
+        }
+        body.light-theme .account-stats {
+            background: rgba(0,0,0,0.03);
+        }
+        body.light-theme .notif-item {
+            border-bottom-color: rgba(0,0,0,0.06);
+        }
+        body.light-theme .notif-name {
+            color: #1a1a1a;
+        }
+        body.light-theme .section-title {
+            color: #1a1a1a;
+        }
+        body.light-theme .card {
+            background-color: #fff;
+        }
+        body.light-theme .card-details-title {
+            color: #1a1a1a;
+        }
+        body.light-theme .profile-modal,
+        body.light-theme .settings-modal,
+        body.light-theme .confirm-modal {
+            background: #fff;
+        }
+        body.light-theme .profile-modal-title,
+        body.light-theme .settings-modal-title,
+        body.light-theme .settings-item-title,
+        body.light-theme .confirm-modal-title {
+            color: #1a1a1a;
+        }
+        body.light-theme .profile-form-input {
+            background: rgba(0,0,0,0.04);
+            border-color: rgba(0,0,0,0.1);
+            color: #1a1a1a;
+        }
+        body.light-theme .settings-item {
+            background: rgba(0,0,0,0.03);
+        }
+
+        /* ===== NOTIFICATION PANEL ===== */
+        .notif-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 9998;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .notif-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .notif-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: min(340px, 92vw);
+            height: 100%;
+            background: #111;
+            z-index: 9999;
+            transform: translateX(110%);
+            transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid rgba(255,255,255,0.08);
+        }
+        .notif-panel.open { transform: translateX(0); }
+
+        .notif-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 16px 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .notif-panel-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .notif-close-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+            border: none;
+            color: #fff;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .notif-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+        .notif-list::-webkit-scrollbar { display: none; }
+
+        .notif-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            gap: 10px;
+            color: rgba(255,255,255,0.3);
+            font-size: 14px;
+        }
+        .notif-empty i { font-size: 36px; }
+
+        .notif-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
+            transition: background 0.15s;
+            animation: notifSlide 0.3s ease forwards;
+        }
+        @keyframes notifSlide {
+            from { opacity: 0; transform: translateX(20px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+        .notif-item:active { background: rgba(255,255,255,0.06); }
+
+        .notif-thumb {
+            width: 52px;
+            height: 74px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: #222;
+        }
+        .notif-info { flex: 1; min-width: 0; }
+        .notif-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 4px;
+        }
+        .notif-type {
+            font-size: 11px;
+            color: var(--accent-color);
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        .notif-time {
+            font-size: 11px;
+            color: rgba(255,255,255,0.35);
+        }
+        .notif-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            flex-shrink: 0;
+        }
+
+
+        /* حاوية السلايدر الكاملة */
+        .slider-outer {
+            position: relative;
+            margin: 60px 10px 6px 10px;
+        }
+
+        .slider-wrapper {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        .slider-track {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.55s cubic-bezier(0.4,0,0.2,1);
+            direction: ltr;
+        }
 
         .slider-section {
             position: relative;
             flex: 0 0 100%;
-            scroll-snap-align: start;
+            height: 100%;
             overflow: hidden;
         }
 
+        /* صورة خلفية الفيلم */
         .movie-card {
             position: relative;
             width: 100%;
@@ -135,102 +1054,179 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            object-position: center top;
+            object-position: center 20%;
             transition: filter 0.5s ease, opacity 0.5s ease;
-            filter: blur(10px);
-            opacity: 0.7;
+            filter: blur(12px);
+            opacity: 0.5;
         }
         .movie-poster.loaded {
             filter: blur(0);
             opacity: 1;
         }
+
+        /* تدرج أسود من اليسار (لإبراز النص) + من الأسفل */
         .movie-overlay {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                to bottom,
-                rgba(0,0,0,0.05) 0%,
-                rgba(0,0,0,0.15) 40%,
-                rgba(0,0,0,0.35) 65%,
-                rgba(10,10,10,0.85) 85%,
-                rgba(10,10,10,1) 100%
-            );
+            inset: 0;
+            background:
+                linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.45) 55%, rgba(0,0,0,0.05) 100%),
+                linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%);
             z-index: 1;
         }
-        .movie-content {
-            position: absolute;
-            bottom: 8%;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            z-index: 2;
-            width: 90%;
-            max-width: 600px;
-            animation: fadeUp 1.2s ease forwards;
-            opacity: 0;
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
-        @keyframes fadeUp {
-            from {opacity: 0; transform: translate(-50%, 20px);}
-            to {opacity: 1; transform: translate(-50%, 0);}
-        }
+
+        /* شعار/اسم الفيلم */
         .movie-logo {
-            max-width: 80%;
+            max-width: 60%;
+            max-height: 70px;
             height: auto;
-            margin-bottom: 25px;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.7));
+            margin-bottom: 10px;
+            filter: drop-shadow(0 3px 8px rgba(0,0,0,0.9));
             opacity: 0;
             transition: opacity 0.5s ease;
+            display: block;
         }
         .movie-logo.loaded { opacity: 1; }
 
+        /* اسم الفيلم النصي (عند عدم وجود شعار) */
+        .movie-title-text {
+            font-size: 26px;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+            margin-bottom: 8px;
+            line-height: 1.1;
+            font-family: 'Arial Black', Arial, sans-serif;
+            letter-spacing: 1px;
+            display: none;
+        }
+
+        /* صف التقييم والسنة والتصنيفات */
         .movie-info {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-size: 15px;
-            color: #ccc;
-            margin-bottom: 25px;
-        }
-        .rating-number {
-            color: #fff;
-            font-weight: 600;
-            font-size: 15px;
-        }
-        .movie-info .imdb-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: #f5c518;
-            color: #000;
-            font-weight: 700;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 13px;
-            line-height: 1;
-            font-family: Arial, sans-serif;
-            height: 18px;
-            vertical-align: middle;
-            position: relative;
-            top: -1px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 0;
         }
 
-        .movie-actions {
+        /* نجمة + رقم التقييم */
+        .slider-rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #FFD700;
+            font-weight: 700;
+            font-size: 13px;
+        }
+        .slider-rating i {
+            font-size: 12px;
+        }
+        .slider-rating span {
+            color: #fff;
+        }
+
+        /* Tags صغيرة (أكشن، زارة، إلخ) */
+        .slider-tag {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        /* فاصل نقطة */
+        .slider-sep {
+            color: rgba(255,255,255,0.5);
+            font-size: 11px;
+        }
+
+        /* النقاط خارج السلايدر */
+        .slider-dots {
             display: flex;
             justify-content: center;
-            align-items: center;
-            gap: 14px;
+            gap: 5px;
+            margin-top: 8px;
         }
+        .slider-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.25);
+            transition: all 0.35s ease;
+            cursor: pointer;
+        }
+        .slider-dot.active {
+            width: 22px;
+            background: #fff;
+            border-radius: 3px;
+        }
+
+        /* زر التشغيل الدائري الأحمر على يمين السلايدر */
+        .slider-play-btn {
+            position: absolute;
+            right: 14px;
+            bottom: 20%;
+            transform: translateY(50%);
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            box-shadow: 0 0 0 5px rgba(255,51,51,0.22), 0 4px 18px rgba(255,51,51,0.55);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            text-decoration: none;
+        }
+        .slider-play-btn:active {
+            transform: translateY(50%) scale(0.92);
+        }
+        .slider-play-btn i {
+            color: #fff;
+            font-size: 20px;
+            margin-left: 3px;
+        }
+
+        /* طبقة رابط شفافة تغطي كامل الشريحة */
+        .slider-section .slider-link {
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            display: block;
+        }
+
+        /* المحتوى فوق الرابط */
+        .movie-content {
+            position: absolute;
+            bottom: 18px;
+            left: 16px;
+            right: 80px; /* مسافة لعدم التداخل مع زر التشغيل */
+            text-align: left;
+            z-index: 4;
+            direction: ltr;
+            animation: slideIn 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        /* أزرار القديمة - تُبقى للاستخدام في أماكن أخرى */
         .action-btn {
-            width: 42px;
-            height: 42px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             border: 1.5px solid rgba(255, 255, 255, 0.3);
             background: rgba(255, 255, 255, 0.1);
             color: white;
-            font-size: 18px;
+            font-size: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -253,22 +1249,23 @@
             50% {transform: scale(1.2);}
             100% {transform: scale(1);}
         }
+        .movie-actions { display: none; }
 
         .watch-btn {
-            height: 43px;
-            padding: 0 22px;
-            border-radius: 25px;
+            height: 36px;
+            padding: 0 16px;
+            border-radius: 20px;
             border: none;
             background: white;
             color: #000;
-            font-size: 15px;
-            font-weight: 600;
+            font-size: 13px;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 5px;
         }
         .watch-btn:hover { transform: scale(1.05); }
 
@@ -838,32 +1835,329 @@
    </style>
 </head>
 <body>
+
+<!-- ===== NOTIFICATION OVERLAY & PANEL ===== -->
+<div class="notif-overlay" id="notifOverlay" onclick="closeNotifPanel()"></div>
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-panel-header">
+    <span class="notif-panel-title">الإشعارات</span>
+    <button class="notif-close-btn" onclick="closeNotifPanel()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="notif-list" id="notifList">
+    <div class="notif-empty" id="notifEmpty">
+      <i class="fa-regular fa-bell-slash"></i>
+      <span>لا توجد إشعارات بعد</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ACCOUNT OVERLAY & PANEL ===== -->
+<div class="account-overlay" id="accountOverlay" onclick="closeAccountPanel()"></div>
+<div class="account-panel" id="accountPanel">
+  <div class="account-panel-header">
+    <span class="account-panel-title">حسابي</span>
+    <button class="account-close-btn" onclick="closeAccountPanel()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="account-content">
+    <div class="account-avatar-section">
+      <img src="https://i.pravatar.cc/200?img=3" alt="صورة الحساب" id="accountAvatar" class="account-avatar">
+      <div class="account-name" id="accountName">مستخدم</div>
+      <div class="account-email" id="accountEmail">user@example.com</div>
+    </div>
+
+    <div class="account-stats">
+      <div class="stat-item">
+        <span class="stat-number" id="favoritesCount">0</span>
+        <span class="stat-label">المفضلة</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number" id="watchLaterCount">0</span>
+        <span class="stat-label">مشاهدة لاحقاً</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number" id="watchedCount">0</span>
+        <span class="stat-label">تم مشاهدتها</span>
+      </div>
+    </div>
+
+    <div class="account-menu">
+      <a class="account-menu-item" href="favorites.html">
+        <i class="fa-solid fa-heart"></i>
+        <span>المفضلة</span>
+        <i class="fa-solid fa-chevron-left menu-arrow"></i>
+      </a>
+      <a class="account-menu-item" href="watchlater.html">
+        <i class="fa-solid fa-bookmark"></i>
+        <span>مشاهدة لاحقاً</span>
+        <i class="fa-solid fa-chevron-left menu-arrow"></i>
+      </a>
+      <a class="account-menu-item" href="history.html">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>سجل المشاهدة</span>
+        <i class="fa-solid fa-chevron-left menu-arrow"></i>
+      </a>
+      <div class="account-menu-item" onclick="openProfileSettings()">
+        <i class="fa-solid fa-user-pen"></i>
+        <span>تعديل الملف الشخصي</span>
+        <i class="fa-solid fa-chevron-left menu-arrow"></i>
+      </div>
+      <div class="account-menu-item" onclick="openSettings()">
+        <i class="fa-solid fa-gear"></i>
+        <span>الإعدادات</span>
+        <i class="fa-solid fa-chevron-left menu-arrow"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PROFILE SETTINGS MODAL ===== -->
+<div class="profile-modal-overlay" id="profileModalOverlay" onclick="closeProfileModal()"></div>
+<div class="profile-modal" id="profileModal">
+  <div class="profile-modal-header">
+    <span class="profile-modal-title">تعديل الملف الشخصي</span>
+    <button class="profile-modal-close" onclick="closeProfileModal()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="profile-modal-content">
+    <div class="profile-avatar-edit">
+      <div class="profile-avatar-wrapper">
+        <img src="https://i.pravatar.cc/200?img=3" alt="صورة الحساب" id="profileEditAvatar" class="profile-avatar-large">
+        <label for="profilePicInput" class="profile-avatar-edit-btn">
+          <i class="fa-solid fa-camera"></i>
+        </label>
+        <input type="file" id="profilePicInput" accept="image/*" style="display: none;" onchange="handleProfilePicChange(event)">
+      </div>
+      <span class="profile-avatar-hint">انقر على الكاميرا لتغيير الصورة</span>
+    </div>
+
+    <div class="profile-form-group">
+      <label class="profile-form-label">اسم المستخدم</label>
+      <input type="text" class="profile-form-input" id="profileNameInput" placeholder="أدخل اسمك">
+    </div>
+
+    <div class="profile-form-group">
+      <label class="profile-form-label">البريد الإلكتروني</label>
+      <input type="email" class="profile-form-input" id="profileEmailInput" placeholder="أدخل بريدك الإلكتروني">
+    </div>
+
+    <div class="profile-form-group">
+      <label class="profile-form-label">القسم المفضل</label>
+      <select class="profile-form-input" id="profileCategoryInput">
+        <option value="">اختر قسمك المفضل</option>
+        <option value="action">أكشن</option>
+        <option value="comedy">كوميدي</option>
+        <option value="drama">دراما</option>
+        <option value="horror">رعب</option>
+        <option value="scifi">خيال علمي</option>
+        <option value="romance">رومانسي</option>
+        <option value="animation">رسوم متحركة</option>
+        <option value="documentary">وثائقي</option>
+      </select>
+    </div>
+
+    <button class="profile-save-btn" onclick="saveProfileSettings()">
+      <i class="fa-solid fa-check"></i> حفظ التغييرات
+    </button>
+  </div>
+</div>
+
+<!-- ===== SETTINGS MODAL ===== -->
+<div class="settings-modal-overlay" id="settingsModalOverlay" onclick="closeSettingsModal()"></div>
+<div class="settings-modal" id="settingsModal">
+  <div class="settings-modal-header">
+    <span class="settings-modal-title">الإعدادات</span>
+    <button class="settings-modal-close" onclick="closeSettingsModal()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="settings-modal-content">
+    <!-- الإشعارات -->
+    <div class="settings-section">
+      <div class="settings-section-title">الإشعارات</div>
+      <div class="settings-item">
+        <div class="settings-item-left">
+          <div class="settings-item-icon"><i class="fa-solid fa-bell"></i></div>
+          <div class="settings-item-text">
+            <span class="settings-item-title">إشعارات المحتوى الجديد</span>
+            <span class="settings-item-desc">تلقي إشعارات عند إضافة أفلام ومسلسلات جديدة</span>
+          </div>
+        </div>
+        <div class="toggle-switch" id="notifToggle" onclick="toggleNotifications()"></div>
+      </div>
+    </div>
+
+    <!-- المظهر -->
+    <div class="settings-section">
+      <div class="settings-section-title">المظهر</div>
+      <div class="settings-item">
+        <div class="settings-item-left">
+          <div class="settings-item-icon"><i class="fa-solid fa-palette"></i></div>
+          <div class="settings-item-text">
+            <span class="settings-item-title">سمة التطبيق</span>
+            <span class="settings-item-desc">اختر بين الوضع الداكن والفاتح</span>
+          </div>
+        </div>
+        <div class="theme-selector">
+          <div class="theme-option light" id="themeLightBtn" onclick="setTheme('light')">
+            <i class="fa-solid fa-sun"></i>
+          </div>
+          <div class="theme-option dark active" id="themeDarkBtn" onclick="setTheme('dark')">
+            <i class="fa-solid fa-moon"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- الحساب -->
+    <div class="settings-section">
+      <div class="settings-section-title">الحساب</div>
+      <button class="delete-account-btn" onclick="confirmDeleteAccount()">
+        <i class="fa-solid fa-trash-can"></i>
+        حذف الحساب
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CONFIRM DELETE MODAL ===== -->
+<div class="confirm-modal-overlay" id="confirmDeleteOverlay" onclick="closeConfirmDelete()"></div>
+<div class="confirm-modal" id="confirmDeleteModal">
+  <div class="confirm-modal-icon">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+  </div>
+  <div class="confirm-modal-title">حذف الحساب</div>
+  <div class="confirm-modal-text">
+    هل أنت متأكد من حذف حسابك؟ سيتم حذف جميع بياناتك بما في ذلك المفضلة وسجل المشاهدة. لا يمكن التراجع عن هذا الإجراء.
+  </div>
+  <div class="confirm-modal-btns">
+    <button class="confirm-btn-cancel" onclick="closeConfirmDelete()">إلغاء</button>
+    <button class="confirm-btn-delete" onclick="deleteAccount()">حذف الحساب</button>
+  </div>
+</div>
+
 <div class="page-container active" id="page-home">
+
+<!-- ===== APP HEADER ===== -->
+<div class="app-header" id="appHeader">
+  <div class="header-right-btns">
+    <button class="notif-btn" id="notifBtn" onclick="openNotifPanel()">
+      <i class="fa-regular fa-bell"></i>
+      <span class="notif-badge" id="notifBadge"></span>
+    </button>
+    <button class="account-btn" id="accountBtn" onclick="openAccountPanel()">
+      <img src="https://i.pravatar.cc/100?img=3" alt="حسابي" id="headerAccountThumb" class="header-account-thumb">
+    </button>
+  </div>
+  <div class="app-logo-text">CINEMA<span>PLUS</span></div>
+</div>
+<!-- تلاشي مدرج أسفل الهيدر -->
+<div class="header-fade"></div>
+
+<div class="slider-outer">
 <div class="slider-wrapper" id="sliderWrapper">
+<div class="slider-track" id="sliderTrack">
+
 <section class="slider-section">
 <div class="movie-card">
-<img alt="خلفية Alien Earth" class="movie-poster loaded" onerror="this.src='https://via.placeholder.com/780x440'" src="https://image.tmdb.org/t/p/original/hAgk9jXsNB1YVKUXiFf46dxyIyK.jpg"/>
+<img alt="Spartacus" class="movie-poster loaded" onerror="this.src='https://via.placeholder.com/780x440'" src="https://image.tmdb.org/t/p/w780/j8LJ9ZiiXZmpRAlPnacnrsUXyFf.jpg"/>
 <div class="movie-overlay"></div>
+<a class="slider-link" href="movie.html?tmdb=1266127&mux=n36zt6IyV9kZh75sospktycUSjtPGbuA02UDHApLytMI"></a>
 <div class="movie-content">
-<img alt="Spartacus: House of Ashur" class="movie-logo loaded" onerror="this.style.display='none'" src="https://image.tmdb.org/t/p/original/kC44UtQYQQH59eO5mqMQTWwlmIs.png"/>
+<img alt="Spartacus logo" class="movie-logo loaded" onerror="this.style.display='none';" src="https://image.tmdb.org/t/p/original/AheKkJgPoDKvxxOsT4XQLZ3ac9u.png"/>
 <div class="movie-info">
-<span>جريمة • دراما</span>
-<span class="imdb-badge">IMDb</span>
-<span class="rating-number">7.3</span>
-<span>/10</span>
-</div>
-<div class="movie-actions">
-<button class="action-btn" onclick="document.getElementById('modalTitle').textContent='PEAKY BLINDERS'; document.getElementById('movieOverview').textContent='بعد ان تورطت المجافي له في مؤامرة نازية يتعين  على رجل العصابات تومي شيلبي العودة من منفاه الاختياري الى برمنغهام الانقاذ عائلته وقومة على حد سواء   '; document.getElementById('infoModal').style.display='block';">
-<i class="fa-solid fa-circle-info"></i>
-</button>
-<button class="watch-btn" onclick="window.location.href = 'movie.html?tmdb=875828&amp;mux=Avp68700cDrbngY00GdeXmbXFS2WfFweaViyNd4L8WN024';">
-<i class="fa-solid fa-play"></i><span>ابدأ المشاهدة</span>
-</button>
-<button class="action-btn" id="fav-123456"><i class="fa-solid fa-plus"></i></button>
+<div class="slider-rating"><i class="fa-solid fa-star"></i><span>7.3</span></div>
+<span class="slider-sep">•</span>
+<span class="slider-sep">2026</span>
+<span class="slider-sep">•</span>
+<span class="slider-tag">رعب</span>
+<span class="slider-tag">كوميدي</span>
 </div>
 </div>
+<a class="slider-play-btn" href="movie.html?tmdb=1266127&mux=n36zt6IyV9kZh75sospktycUSjtPGbuA02UDHApLytMI"><i class="fa-solid fa-play"></i></a>
 </div>
-</section></div>
+</section>
+
+<section class="slider-section">
+<div class="movie-card">
+<img alt="John Wick 4" class="movie-poster loaded" onerror="this.src='https://via.placeholder.com/780x440'" src="https://image.tmdb.org/t/p/original/ntPgSYKwPg9xKO4VvLJYfInSyZa.jpg"/>
+<div class="movie-overlay"></div>
+<a class="slider-link" href="series/308014.html"></a>
+<div class="movie-content">
+<img alt="John Wick 4 logo" class="movie-logo loaded" onerror="this.style.display='none';" src="https://image.tmdb.org/t/p/original/uBw5HWfUgMx9yKFuecVEqiEtxFK.png"/>
+<div class="movie-info">
+<div class="slider-rating"><i class="fa-solid fa-star"></i><span>5.5</span></div>
+<span class="slider-sep">•</span>
+<span class="slider-sep">2026</span>
+<span class="slider-sep">•</span>
+<span class="slider-tag">دراما</span>
+<span class="slider-tag">إثارة</span>
+</div>
+</div>
+<a class="slider-play-btn" href="series/308014.html"><i class="fa-solid fa-play"></i></a>
+</div>
+</section>
+
+<section class="slider-section">
+<div class="movie-card">
+<img alt="Spider-Man" class="movie-poster loaded" onerror="this.src='https://via.placeholder.com/780x440'" src="https://image.tmdb.org/t/p/w780/1xfKe6veUmryGpF53yXAzlSgUfM.jpg"/>
+<div class="movie-overlay"></div>
+<a class="slider-link" href="movie.html?tmdb=1439930&mux=de02vk01C7Vbjo7CApZpCdVnQvTMCQs1CaPOk2LcpT2Nc"></a>
+<div class="movie-content">
+<img alt="Spider-Man logo" class="movie-logo loaded" onerror="this.style.display='none';" src="https://image.tmdb.org/t/p/original/w7V8XgvwZn3sdze0yvfXu5JFXIg.png"/>
+<div class="movie-info">
+<div class="slider-rating"><i class="fa-solid fa-star"></i><span>8.2</span></div>
+<span class="slider-sep">•</span>
+<span class="slider-sep">2026</span>
+<span class="slider-sep">•</span>
+<span class="slider-tag">أكشن</span>
+<span class="slider-tag">مغامرة</span>
+</div>
+</div>
+<a class="slider-play-btn" href="movie.html?tmdb=1439930&mux=de02vk01C7Vbjo7CApZpCdVnQvTMCQs1CaPOk2LcpT2Nc"><i class="fa-solid fa-play"></i></a>
+</div>
+</section>
+
+<section class="slider-section">
+<div class="movie-card">
+<img alt="Dune" class="movie-poster loaded" onerror="this.src='https://via.placeholder.com/780x440'" src="https://image.tmdb.org/t/p/w780/xQRNN12LePQqqIbhP6xP5X212HG.jpg"/>
+<div class="movie-overlay"></div>
+<a class="slider-link" href="movie.html?tmdb=687163&mux=NrI00TXHm9zPEWe02lVHqww028abBMJs2qFdwL9C16zTjo"></a>
+<div class="movie-content">
+<img alt="Dune logo" class="movie-logo loaded" onerror="this.style.display='none';" src="https://image.tmdb.org/t/p/original/xCL7AxU18ddFQP1vGVus8zPs3b0.png"/>
+<div class="movie-info">
+<div class="slider-rating"><i class="fa-solid fa-star"></i><span>8.5</span></div>
+<span class="slider-sep">•</span>
+<span class="slider-sep">2026</span>
+<span class="slider-sep">•</span>
+<span class="slider-tag">خيال علمي</span>
+<span class="slider-tag">مغامرة</span>
+</div>
+</div>
+<a class="slider-play-btn" href="movie.html?tmdb=687163&mux=NrI00TXHm9zPEWe02lVHqww028abBMJs2qFdwL9C16zTjo"><i class="fa-solid fa-play"></i></a>
+</div>
+</section>
+
+<section class="slider-section">
+<div class="movie-card">
+<img alt="Oppenheimer" class="movie-poster loaded" onerror="this.src='https://via.placeholder.com/780x440'" src="https://image.tmdb.org/t/p/w780/5hH7QiEPOiz7aGa4eJce74kZkO1.jpg"/>
+<div class="movie-overlay"></div>
+<a class="slider-link" href="movie.html?tmdb=1159831&mux=zTJQYR4Ml4Tw01PgUXaCp02SvIKSEqgVjSsalJFkR02Yfg"></a>
+<div class="movie-content">
+<img alt="Oppenheimer logo" class="movie-logo loaded" onerror="this.style.display='none';" src="https://image.tmdb.org/t/p/original/exsDacnfxCqnuOYy64yRMaVTOlv.png"/>
+<div class="movie-info">
+<div class="slider-rating"><i class="fa-solid fa-star"></i><span>6.3</span></div>
+<span class="slider-sep">•</span>
+<span class="slider-sep">2026</span>
+<span class="slider-sep">•</span>
+<span class="slider-tag">خيال علمي</span>
+<span class="slider-tag">رعب</span>
+</div>
+</div>
+<a class="slider-play-btn" href="movie.html?tmdb=1159831&mux=zTJQYR4Ml4Tw01PgUXaCp02SvIKSEqgVjSsalJFkR02Yfg"><i class="fa-solid fa-play"></i></a>
+</div>
+</section>
+
+</div>
+</div>
+<div class="slider-dots" id="sliderDots"></div>
+</div>
 <section class="must-watch-section">
 <div class="section-title">
 <div class="horizontal-scroll">
@@ -961,7 +2255,7 @@
 </div>
 </div></section>
 <div class="section">
-<h3 class="section-title">الاضافات الأخيرة</h3><div class="horizontal-list" style="scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;">
+<h3 class="section-title">الاضافات الأخيرة</h3><div class="horizontal-list" id="latestMoviesGrid" style="scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;">
 <!-- START_LATEST -->
 <div class="card-wrapper">
 <a class="card" href="movie.html?tmdb=855435&mux=yhjcbFVX5tfIRZj02Z007NlRrtjveY6UqbmtziGNkLi9o">
@@ -1320,63 +2614,6 @@
 <div class="rating">
 <img alt="IMDb" loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg">
 <span>5.7</span>
-</div>
-</div>
-</div>
-</div>
-<div class="card-wrapper">
-<a class="card" href="movie.html?tmdb=1557848&mux=w02XKW9nry01011iFeQJ89M1uSiqhz4zlN2Z728Zcd5HmU">
-<img class="lazy loaded" loading="lazy" src="https://image.tmdb.org/t/p/w500/jS3QZLD2zwcJYmulMESZnkfNlUD.jpg" data-src-original="https://image.tmdb.org/t/p/original/jS3QZLD2zwcJYmulMESZnkfNlUD.jpg">
-<div class="card-overlay">
-<i class="fas fa-play play-icon"></i>
-<span class="card-desc">Cinema Plus</span>
-</div>
-</a>
-<div class="card-details">
-<h3 class="card-details-title">Uykucu</h3>
-<div class="card-details-meta">
-<span class="year">2025</span>
-<div class="rating">
-<img alt="IMDb" loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg">
-<span>6.7</span>
-</div>
-</div>
-</div>
-</div>
-<div class="card-wrapper">
-<a class="card" href="movie.html?tmdb=1439930&mux=de02vk01C7Vbjo7CApZpCdVnQvTMCQs1CaPOk2LcpT2Nc">
-<img class="lazy loaded" loading="lazy" src="https://image.tmdb.org/t/p/w500/gOggsBCSypNXq0yApYeXe7nnopT.jpg" data-src-original="https://image.tmdb.org/t/p/original/gOggsBCSypNXq0yApYeXe7nnopT.jpg">
-<div class="card-overlay">
-<i class="fas fa-play play-icon"></i>
-<span class="card-desc">Cinema Plus</span>
-</div>
-</a>
-<div class="card-details">
-<h3 class="card-details-title">A Marvel Television Special Presentation - The Punisher: One Last Kill</h3>
-<div class="card-details-meta">
-<span class="year">2026</span>
-<div class="rating">
-<img alt="IMDb" loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg">
-<span>8.6</span>
-</div>
-</div>
-</div>
-</div>
-<div class="card-wrapper">
-<a class="card" href="series/308014.html">
-<img class="lazy loaded" loading="lazy" src="https://image.tmdb.org/t/p/w500/kru9Y5uRXdZFcUyeRlcv4bP4hOr.jpg" data-src-original="https://image.tmdb.org/t/p/original/kru9Y5uRXdZFcUyeRlcv4bP4hOr.jpg">
-<div class="card-overlay">
-<i class="fas fa-play play-icon"></i>
-<span class="card-desc">Cinema Plus</span>
-</div>
-</a>
-<div class="card-details">
-<h3 class="card-details-title">Berlín y la dama del armiño</h3>
-<div class="card-details-meta">
-<span class="year">2026</span>
-<div class="rating">
-<img alt="IMDb" loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg">
-<span>5.5</span>
 </div>
 </div>
 </div>
@@ -6561,26 +7798,7 @@ https://image.tmdb.org/t/p/original/yS9MTrTI3cyumHk8ZYN5bG4Vqmc.png" style="posi
 <div class="section">
 <h3 class="section-title">مسلسلات</h3>
 <div class="horizontal-list" style="scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;">
-<!-- START_SERIES -->
-<div class="card-wrapper">
-<a class="card" href="series/308014.html">
-<img class="lazy loaded" loading="lazy" src="https://image.tmdb.org/t/p/w500/kru9Y5uRXdZFcUyeRlcv4bP4hOr.jpg" data-src-original="https://image.tmdb.org/t/p/original/kru9Y5uRXdZFcUyeRlcv4bP4hOr.jpg">
-<div class="card-overlay">
-<i class="fas fa-play play-icon"></i>
-<span class="card-desc">Cinema Plus</span>
-</div>
-</a>
-<div class="card-details">
-<h3 class="card-details-title">Berlín y la dama del armiño</h3>
-<div class="card-details-meta">
-<span class="year">2026</span>
-<div class="rating">
-<img alt="IMDb" loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg">
-<span>5.5</span>
-</div>
-</div>
-</div>
-</div><div class="card-wrapper">
+<!-- START_SERIES --><div class="card-wrapper">
 <a class="card" href="series/302063.html">
 <img class="lazy loaded" data-src-original="https://image.tmdb.org/t/p/original/uHIOTJXN9nNTc51WyunL43Fvge3.jpg" loading="lazy" src="https://image.tmdb.org/t/p/w500/uHIOTJXN9nNTc51WyunL43Fvge3.jpg"/>
 <div class="card-overlay">
@@ -7320,7 +8538,7 @@ https://image.tmdb.org/t/p/original/yS9MTrTI3cyumHk8ZYN5bG4Vqmc.png" style="posi
 <div class="card-wrapper"><a class="card" href="go:320288"><img class="lazy loaded" data-src-original="https://image.tmdb.org/t/p/original/cCTJPelKGLhALq3r51A9uMonxKj.jpg" loading="lazy" src="https://image.tmdb.org/t/p/original/cCTJPelKGLhALq3r51A9uMonxKj.jpg"/><div class="card-overlay"><i class="fas fa-play play-icon"></i><span class="card-desc">Cinema Plus عالم من المتعة</span></div></a><div class="card-details"><h3 class="card-details-title">Dark Phoenix</h3><div class="card-details-meta"><span class="year">2019</span><div class="rating"><img alt="IMDb" loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg"/><span>6.0</span></div></div></div></div>
 <div class="card-wrapper"><a class="card" href="go:383498"><img class="lazy loaded" data-src-original="https://image.tmdb.org/t/p/original/to0spRl1CMDvyUbOnbb4fTk3VAd.jpg" loading="lazy" src="https://image.tmdb.org/t/p/original/to0spRl1CMDvyUbOnbb4fTk3VAd.jpg"/><div class="card-overlay"><i class="fas fa-play play-icon"></i><span class="card-desc">Cinema Plus عالم من المتعة</span></div></a><div class="card-details"><h3 class="card-details-title">Deadpool 2</h3><div class="card-details-meta"><span class="year">2018</span><div class="rating"><img alt="IMDb" loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg"/><span>7.5</span></div></div></div></div>
 <div class="card-wrapper"><a class="card" href="go:263115"><img class="lazy loaded" data-src-original="https://image.tmdb.org/t/p/original/fnbjcRDYn6YviCcePDnGdyAkYsB.jpg" loading="lazy" src="https://image.tmdb.org/t/p/original/fnbjcRDYn6YviCcePDnGdyAkYsB.jpg"/><div class="card-overlay"><i class="fas fa-play play-icon"></i><span class="card-desc">Cinema Plus عالم من المتعة</span></div></a><div class="card-details"><h3 class="card-details-title">Logan</h3><div class="card-details-meta"><span class="year">2017</span><div class="rating"><img alt="IMDb" loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg"/><span>7.8</span></div></div></div></div>
-<div class="card-wrapper"><a class="card" href="go:259693"><img class="lazy loaded" data-src-original="https://image.tmdb.org/t/p/original/zEqyD0SBt6HL7W9JQoWwtd5Do1T.jpg" loading="lazy" src="https://image.tmdb.org/t/p/original/zEqyD0SBt6HL7W9JQoWwtd5Do1T.jpg"/><div class="card-overlay"><i class="fas fa-play play-icon"></i><span class="card-desc">Cinema Plus عالم من المتعة</span></div></a><div class="card-details"><h3 class="card-details-title">The Conjuring 2</h3><div class="card-details-meta"><span class="year">2016</span><div class="rating"><img alt="IMDb" loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg"/><span>7.3</span></div></div></div></div>
+<div class="card-wrapper"><a class="card" href="go:259693"><img class="lazy loaded" data-src-original="https://image.tmdb.org/t/p/original/zEqyD0SBt6HL7W9JQoWwtd5Do1T.jpg" loading="lazy" src="https://image.tmdb.org/t/p/original/zEqyD0SBt6HL7W9JQoWwtd5Do1T.jpg"/><div class="card-overlay"><i class="fas fa-play play-icon"></i><span class="card-desc">Cinema Plus عالم من ��لمتعة</span></div></a><div class="card-details"><h3 class="card-details-title">The Conjuring 2</h3><div class="card-details-meta"><span class="year">2016</span><div class="rating"><img alt="IMDb" loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg"/><span>7.3</span></div></div></div></div>
 <div class="card-wrapper"><a class="card" href="go:420817"><img class="lazy loaded" data-src-original="https://image.tmdb.org/t/p/original/ykUEbfpkf8d0w49pHh0AD2KrT52.jpg" loading="lazy" src="https://image.tmdb.org/t/p/original/ykUEbfpkf8d0w49pHh0AD2KrT52.jpg"/><div class="card-overlay"><i class="fas fa-play play-icon"></i><span class="card-desc">Cinema Plus عالم من المتعة</span></div></a><div class="card-details"><h3 class="card-details-title">Aladdin</h3><div class="card-details-meta"><span class="year">2019</span><div class="rating"><img alt="IMDb" loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg"/><span>7.1</span></div></div></div></div>
 <div class="card-wrapper"><a class="card" href="go:615457"><img class="lazy loaded" data-src-original="https://image.tmdb.org/t/p/original/oBgWY00bEFeZ9N25wWVyuQddbAo.jpg" loading="lazy" src="https://image.tmdb.org/t/p/original/oBgWY00bEFeZ9N25wWVyuQddbAo.jpg"/><div class="card-overlay"><i class="fas fa-play play-icon"></i><span class="card-desc">Cinema Plus عالم من المتعة</span></div></a><div class="card-details"><h3 class="card-details-title">Nobody</h3><div class="card-details-meta"><span class="year">2021</span><div class="rating"><img alt="IMDb" loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg"/><span>7.9</span></div></div></div></div>
 <div class="card-wrapper"><a class="card" href="go:438631"><img class="lazy loaded" data-src-original="https://image.tmdb.org/t/p/original/d5NXSklXo0qyIYkgV94XAgMIckC.jpg" loading="lazy" src="https://image.tmdb.org/t/p/original/d5NXSklXo0qyIYkgV94XAgMIckC.jpg"/><div class="card-overlay"><i class="fas fa-play play-icon"></i><span class="card-desc">Cinema Plus عالم من المتعة</span></div></a><div class="card-details"><h3 class="card-details-title">Dune</h3><div class="card-details-meta"><span class="year">2021</span><div class="rating"><img alt="IMDb" loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg"/><span>7.8</span></div></div></div></div>
@@ -7816,109 +9034,54 @@ https://image.tmdb.org/t/p/original/yS9MTrTI3cyumHk8ZYN5bG4Vqmc.png" style="posi
 </svg>
 <span>اكتشف</span>
 </a>
-<a class="nav-item" href="go:3">
+<a class="nav-item" href="go:1460">
 <img alt="حسابي" class="user-thumb" id="accountThumb" src="https://g.top4top.io/p_3574zk5bb1.jpg"/>
 <span>حسابي</span>
 </a>
 </nav>
 <script>
 // ===== START: NEW SLIDER JAVASCRIPT =====
-const API_KEY = "06f120992cfacd7c118f6e7086d23544";
-const FAVORITES_KEY = "favoriteMovies";
-const sliderWrapper = document.getElementById("sliderWrapper");
-const sliderSections = document.querySelectorAll(".slider-section");
+(function() {
+  const track = document.getElementById("sliderTrack");
+  const dotsContainer = document.getElementById("sliderDots");
+  const sections = document.querySelectorAll(".slider-section");
+  let current = 0;
+  let autoTimer;
 
-sliderSections.forEach(section => {
-  const MOVIE_ID = section.getAttribute("data-id");
-  const API_URL = `https://api.themoviedb.org/3/movie/${MOVIE_ID}?api_key=${API_KEY}&language=ar`;
-  const IMAGES_URL = `https://api.themoviedb.org/3/movie/${MOVIE_ID}/images?api_key=${API_KEY}`;
-  
-  Promise.all([
-    fetch(API_URL).then(res => res.json()),
-    fetch(IMAGES_URL).then(res => res.json())
-  ]).then(([data, images]) => {
-    section.innerHTML = `
-      <div class="movie-card">
-        <img class="movie-poster" id="poster-${MOVIE_ID}">
-        <div class="movie-overlay"></div>
-        <div class="movie-content">
-          <img class="movie-logo" id="logo-${MOVIE_ID}">
-          <div class="movie-info">
-            <span>${data.genres.map(g => g.name).join(" • ")}</span>
-            <span class="imdb-badge">IMDb</span>
-            <span class="rating-number">${data.vote_average.toFixed(1)}</span>
-            <span>/10</span>
-          </div>
-          <div class="movie-actions">
-            <button class="action-btn" id="info-${MOVIE_ID}"><i class="fa-solid fa-circle-info"></i></button>
-            <button class="watch-btn" id="watch-${MOVIE_ID}"><i class="fa-solid fa-play"></i><span>ابدأ المشاهدة</span></button>
-            <button class="action-btn" id="fav-${MOVIE_ID}"><i class="fa-solid fa-plus"></i></button>
-          </div>
-        </div>
-      </div>
-    `;
+  // إنشاء النقاط
+  sections.forEach((_, i) => {
+    const dot = document.createElement("div");
+    dot.className = "slider-dot" + (i === 0 ? " active" : "");
+    dot.addEventListener("click", () => goTo(i));
+    dotsContainer.appendChild(dot);
+  });
 
-    const posterBase = `https://image.tmdb.org/t/p/original`;
-    const posterEl = section.querySelector(`#poster-${MOVIE_ID}`);
-    const img = new Image();
-    img.src = `${posterBase}${data.backdrop_path}`;
-    img.onload = () => {
-        posterEl.src = img.src;
-        posterEl.classList.add("loaded");
-    };
-
-    const logo = images.logos.find(l => l.iso_639_1 === "ar") || images.logos.find(l => l.iso_639_1 === "en");
-    const logoEl = section.querySelector(`#logo-${MOVIE_ID}`);
-    if (logo) {
-      const logoImg = new Image();
-      logoImg.src = `https://image.tmdb.org/t/p/original${logo.file_path}`;
-      logoImg.onload = () => {
-          logoEl.src = logoImg.src;
-          logoEl.classList.add("loaded");
-      };
-    } else {
-        logoEl.style.display = "none";
-    }
-
-    section.querySelector(`#watch-${MOVIE_ID}`).addEventListener("click", () => {
-      window.location.href = `go:${data.id}`;
+  function goTo(index) {
+    current = (index + sections.length) % sections.length;
+    track.style.transform = `translateX(-${current * 100}%)`;
+    document.querySelectorAll(".slider-dot").forEach((d, i) => {
+      d.classList.toggle("active", i === current);
     });
+  }
 
-    const favBtn = section.querySelector(`#fav-${MOVIE_ID}`);
-    const favIcon = favBtn.querySelector("i");
-    const favorites = JSON.parse(localStorage.getItem(FAVORITES_KEY)) || [];
-    let isFav = favorites.includes(data.id);
+  function startAuto() {
+    clearInterval(autoTimer);
+    autoTimer = setInterval(() => goTo(current + 1), 5000);
+  }
 
-    function updateFav() {
-      if (isFav) {
-        favBtn.classList.add("added");
-        favIcon.classList.replace("fa-plus", "fa-check");
-      } else {
-        favBtn.classList.remove("added");
-        favIcon.classList.replace("fa-check", "fa-plus");
-      }
-    }
-    updateFav();
+  // سحب باللمس
+  let startX = 0;
+  track.addEventListener("touchstart", e => { startX = e.touches[0].clientX; clearInterval(autoTimer); }, {passive:true});
+  track.addEventListener("touchend", e => {
+    const diff = startX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) goTo(diff > 0 ? current + 1 : current - 1);
+    startAuto();
+  }, {passive:true});
 
-    favBtn.addEventListener("click", () => {
-      isFav = !isFav;
-      if (isFav) {
-        favorites.push(data.id);
-      } else {
-        favorites.splice(favorites.indexOf(data.id), 1);
-      }
-      localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
-      updateFav();
-    });
-
-    section.querySelector(`#info-${MOVIE_ID}`).addEventListener("click", () => {
-      document.getElementById("modalTitle").textContent = data.title;
-      document.getElementById("movieOverview").textContent = data.overview || "لا يوجد وصف متاح حالياً.";
-      document.getElementById("infoModal").style.display = "block";
-    });
-
-  }).catch(err => console.error("Slider Error:", err));
-});
+  goTo(0);
+  startAuto();
+})();
+// ===== END: NEW SLIDER JAVASCRIPT =====
 
 document.getElementById("closeModal").addEventListener("click", () => {
   document.getElementById("infoModal").style.display = "none";
@@ -8144,6 +9307,838 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+// ===== NOTIFICATION SYSTEM =====
+const MAX_NOTIFS = 10;
+const NOTIF_KEY = 'cinemaplus_notifs';
+
+function getNotifs() {
+  try { return JSON.parse(localStorage.getItem(NOTIF_KEY)) || []; }
+  catch { return []; }
+}
+function saveNotifs(arr) {
+  localStorage.setItem(NOTIF_KEY, JSON.stringify(arr));
+}
+
+function areNotificationsEnabled() {
+  const settings = JSON.parse(localStorage.getItem('appSettings')) || { notifications: true, theme: 'dark' };
+  return settings.notifications;
+}
+
+function addNotification(item) {
+  // Check if notifications are enabled
+  if (!areNotificationsEnabled()) {
+    return;
+  }
+  
+  // item = { title, image, type, link }
+  let notifs = getNotifs();
+  // أضف في البداية
+  notifs.unshift({ ...item, id: Date.now(), time: new Date().toISOString() });
+  // احتفظ بأحدث 10 فقط - إذا وصلنا للإشعار 11 نحذف الأقدم
+  if (notifs.length > MAX_NOTIFS) {
+    notifs = notifs.slice(0, MAX_NOTIFS);
+  }
+  saveNotifs(notifs);
+  renderNotifList();
+  updateBadge();
+}
+
+function renderNotifList() {
+  const list = document.getElementById('notifList');
+  const empty = document.getElementById('notifEmpty');
+  const notifs = getNotifs();
+  // احذف العناصر القديمة ما عدا notif-empty
+  list.querySelectorAll('.notif-item').forEach(el => el.remove());
+  if (notifs.length === 0) {
+    empty.style.display = 'flex';
+    return;
+  }
+  empty.style.display = 'none';
+  notifs.forEach(n => {
+    const el = document.createElement('div');
+    el.className = 'notif-item';
+    el.onclick = () => { if (n.link) window.location.href = n.link; closeNotifPanel(); };
+    const timeAgo = formatTimeAgo(n.time);
+    el.innerHTML = `
+      <img class="notif-thumb" src="${n.image || ''}" onerror="this.src='https://via.placeholder.com/52x74/222/444?text=🎬'" alt="${n.title}">
+      <div class="notif-info">
+        <div class="notif-type">${n.type === 'series' ? 'مسلسل جديد' : 'فيلم جديد'}</div>
+        <div class="notif-name">${n.title}</div>
+        <div class="notif-time">${timeAgo}</div>
+      </div>
+      <div class="notif-dot"></div>
+    `;
+    list.appendChild(el);
+  });
+}
+
+function formatTimeAgo(iso) {
+  const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (diff < 60) return 'الآن';
+  if (diff < 3600) return `منذ ${Math.floor(diff/60)} دقيقة`;
+  if (diff < 86400) return `منذ ${Math.floor(diff/3600)} ساعة`;
+  return `منذ ${Math.floor(diff/86400)} يوم`;
+}
+
+function updateBadge() {
+  const badge = document.getElementById('notifBadge');
+  if (!badge) return;
+  const count = getNotifs().length;
+  badge.classList.toggle('visible', count > 0);
+}
+
+function openNotifPanel() {
+  document.getElementById('notifOverlay').classList.add('open');
+  document.getElementById('notifPanel').classList.add('open');
+  renderNotifList();
+  // إزالة النقطة الحمراء عند فتح اللوحة
+  document.getElementById('notifBadge').classList.remove('visible');
+}
+
+function closeNotifPanel() {
+  document.getElementById('notifOverlay').classList.remove('open');
+  document.getElementById('notifPanel').classList.remove('open');
+}
+
+// ===== LOAD LATEST MOVIES AS NOTIFICATIONS =====
+function loadLatestMoviesAsNotifications() {
+  // Check if notifications are enabled
+  if (!areNotificationsEnabled()) {
+    return;
+  }
+  
+  const grid = document.getElementById('latestMoviesGrid');
+  if (!grid) return;
+  
+  // Get all card-wrappers in the latest movies section
+  const cardWrappers = grid.querySelectorAll('.card-wrapper');
+  
+  // Get existing notifications
+  let existingNotifs = getNotifs();
+  const existingLinks = existingNotifs.map(n => n.link);
+  
+  // Key to track if we've already loaded initial notifications
+  const INIT_KEY = 'cinemaplus_notifs_initialized';
+  const isFirstLoad = !localStorage.getItem(INIT_KEY);
+  
+  if (isFirstLoad) {
+    // First time load - add last 10 movies
+    const movies = [];
+    
+    cardWrappers.forEach((wrapper, index) => {
+      if (index >= 10) return; // Only first 10
+      
+      const link = wrapper.querySelector('a.card');
+      const img = wrapper.querySelector('img.lazy');
+      const title = wrapper.querySelector('.card-details-title');
+      
+      if (link && img && title) {
+        const movieData = {
+          title: title.textContent.trim(),
+          image: img.src || img.getAttribute('data-src-original'),
+          type: link.href.includes('series') ? 'series' : 'movie',
+          link: link.getAttribute('href')
+        };
+        movies.push(movieData);
+      }
+    });
+    
+    // Add movies in reverse order so the first movie is the newest notification
+    movies.reverse().forEach(movie => {
+      addNotification(movie);
+    });
+    
+    // Mark as initialized
+    localStorage.setItem(INIT_KEY, 'true');
+  }
+  
+  // Always render the list and update badge
+  renderNotifList();
+  updateBadge();
+}
+
+// Function to manually add a new movie notification (can be called when new content is added)
+function notifyNewMovie(title, image, link, type = 'movie') {
+  addNotification({
+    title: title,
+    image: image,
+    type: type,
+    link: link
+  });
+}
+
+// Initialize notifications on page load
+document.addEventListener('DOMContentLoaded', function() {
+  loadLatestMoviesAsNotifications();
+});
+// ===== END LATEST MOVIES NOTIFICATIONS =====
+
+// ===== ACCOUNT PANEL SYSTEM =====
+function openAccountPanel() {
+  document.getElementById('accountOverlay').classList.add('open');
+  document.getElementById('accountPanel').classList.add('open');
+  updateAccountStats();
+  loadProfileData();
+}
+
+function closeAccountPanel() {
+  document.getElementById('accountOverlay').classList.remove('open');
+  document.getElementById('accountPanel').classList.remove('open');
+}
+
+function updateAccountStats() {
+  const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+  const watchLater = JSON.parse(localStorage.getItem('watchLater')) || [];
+  const watched = JSON.parse(localStorage.getItem('watchedHistory')) || [];
+  
+  document.getElementById('favoritesCount').textContent = favorites.length;
+  document.getElementById('watchLaterCount').textContent = watchLater.length;
+  document.getElementById('watchedCount').textContent = watched.length;
+}
+
+function loadProfileData() {
+  const profileData = JSON.parse(localStorage.getItem('profileData')) || {};
+  
+  if (profileData.name) {
+    document.getElementById('accountName').textContent = profileData.name;
+  }
+  if (profileData.email) {
+    document.getElementById('accountEmail').textContent = profileData.email;
+  }
+  if (profileData.profilePic) {
+    document.getElementById('accountAvatar').src = profileData.profilePic;
+    document.getElementById('headerAccountThumb').src = profileData.profilePic;
+  }
+}
+
+// ===== PROFILE SETTINGS MODAL =====
+function openProfileSettings() {
+  closeAccountPanel();
+  
+  // Load existing data
+  const profileData = JSON.parse(localStorage.getItem('profileData')) || {};
+  document.getElementById('profileNameInput').value = profileData.name || '';
+  document.getElementById('profileEmailInput').value = profileData.email || '';
+  document.getElementById('profileCategoryInput').value = profileData.category || '';
+  if (profileData.profilePic) {
+    document.getElementById('profileEditAvatar').src = profileData.profilePic;
+  }
+  
+  document.getElementById('profileModalOverlay').classList.add('open');
+  document.getElementById('profileModal').classList.add('open');
+}
+
+function closeProfileModal() {
+  document.getElementById('profileModalOverlay').classList.remove('open');
+  document.getElementById('profileModal').classList.remove('open');
+}
+
+function handleProfilePicChange(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('profileEditAvatar').src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function saveProfileSettings() {
+  const name = document.getElementById('profileNameInput').value.trim();
+  const email = document.getElementById('profileEmailInput').value.trim();
+  const category = document.getElementById('profileCategoryInput').value;
+  const profilePic = document.getElementById('profileEditAvatar').src;
+  
+  const profileData = {
+    name: name || 'مستخدم',
+    email: email || 'user@example.com',
+    category: category,
+    profilePic: profilePic
+  };
+  
+  localStorage.setItem('profileData', JSON.stringify(profileData));
+  
+  // Update UI
+  document.getElementById('accountName').textContent = profileData.name;
+  document.getElementById('accountEmail').textContent = profileData.email;
+  document.getElementById('accountAvatar').src = profilePic;
+  document.getElementById('headerAccountThumb').src = profilePic;
+  
+  // Update nav thumb if exists
+  const accountThumb = document.getElementById('accountThumb');
+  if (accountThumb) {
+    accountThumb.src = profilePic;
+  }
+  
+  closeProfileModal();
+  
+  // Show success message
+  showToast('تم حفظ التغييرات بنجاح');
+}
+
+// ===== SETTINGS MODAL =====
+function openSettings() {
+  closeAccountPanel();
+  
+  // Load settings
+  const settings = JSON.parse(localStorage.getItem('appSettings')) || { notifications: true, theme: 'dark' };
+  
+  // Update notification toggle
+  const notifToggle = document.getElementById('notifToggle');
+  if (settings.notifications) {
+    notifToggle.classList.add('active');
+  } else {
+    notifToggle.classList.remove('active');
+  }
+  
+  // Update theme buttons
+  updateThemeButtons(settings.theme);
+  
+  document.getElementById('settingsModalOverlay').classList.add('open');
+  document.getElementById('settingsModal').classList.add('open');
+}
+
+function closeSettingsModal() {
+  document.getElementById('settingsModalOverlay').classList.remove('open');
+  document.getElementById('settingsModal').classList.remove('open');
+}
+
+function toggleNotifications() {
+  const settings = JSON.parse(localStorage.getItem('appSettings')) || { notifications: true, theme: 'dark' };
+  settings.notifications = !settings.notifications;
+  localStorage.setItem('appSettings', JSON.stringify(settings));
+  
+  const notifToggle = document.getElementById('notifToggle');
+  notifToggle.classList.toggle('active');
+  
+  showToast(settings.notifications ? 'تم تفعيل الإشعارات' : 'تم إيقاف الإشعارات');
+}
+
+function setTheme(theme) {
+  const settings = JSON.parse(localStorage.getItem('appSettings')) || { notifications: true, theme: 'dark' };
+  settings.theme = theme;
+  localStorage.setItem('appSettings', JSON.stringify(settings));
+  
+  applyTheme(theme);
+  updateThemeButtons(theme);
+  
+  showToast(theme === 'light' ? 'تم تفعيل الوضع الفاتح' : 'تم تفعيل الوضع الداكن');
+}
+
+function applyTheme(theme) {
+  if (theme === 'light') {
+    document.body.classList.add('light-theme');
+  } else {
+    document.body.classList.remove('light-theme');
+  }
+}
+
+function updateThemeButtons(theme) {
+  document.getElementById('themeLightBtn').classList.toggle('active', theme === 'light');
+  document.getElementById('themeDarkBtn').classList.toggle('active', theme === 'dark');
+}
+
+// ===== DELETE ACCOUNT =====
+function confirmDeleteAccount() {
+  document.getElementById('confirmDeleteOverlay').classList.add('open');
+  document.getElementById('confirmDeleteModal').classList.add('open');
+}
+
+function closeConfirmDelete() {
+  document.getElementById('confirmDeleteOverlay').classList.remove('open');
+  document.getElementById('confirmDeleteModal').classList.remove('open');
+}
+
+function deleteAccount() {
+  // Clear all user data
+  localStorage.removeItem('profileData');
+  localStorage.removeItem('favorites');
+  localStorage.removeItem('watchLater');
+  localStorage.removeItem('watchedHistory');
+  localStorage.removeItem('appSettings');
+  localStorage.removeItem('cinemaplus_notifs');
+  
+  closeConfirmDelete();
+  closeSettingsModal();
+  
+  // Reset UI
+  document.getElementById('accountName').textContent = 'مستخدم';
+  document.getElementById('accountEmail').textContent = 'user@example.com';
+  document.getElementById('accountAvatar').src = 'https://i.pravatar.cc/200?img=3';
+  document.getElementById('headerAccountThumb').src = 'https://i.pravatar.cc/100?img=3';
+  
+  const accountThumb = document.getElementById('accountThumb');
+  if (accountThumb) {
+    accountThumb.src = 'https://g.top4top.io/p_3574zk5bb1.jpg';
+  }
+  
+  // Reset to dark theme
+  document.body.classList.remove('light-theme');
+  
+  showToast('تم حذف الحساب بنجاح');
+}
+
+// ===== TOAST NOTIFICATION =====
+function showToast(message) {
+  // Remove existing toast
+  const existingToast = document.querySelector('.custom-toast');
+  if (existingToast) existingToast.remove();
+  
+  const toast = document.createElement('div');
+  toast.className = 'custom-toast';
+  toast.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${message}`;
+  toast.style.cssText = `
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(30, 30, 30, 0.95);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-family: 'Tajawal', sans-serif;
+    z-index: 11000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: toastIn 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  `;
+  
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.style.animation = 'toastOut 0.3s ease forwards';
+    setTimeout(() => toast.remove(), 300);
+  }, 2500);
+}
+
+// Add toast animation styles
+const toastStyles = document.createElement('style');
+toastStyles.textContent = `
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+  @keyframes toastOut {
+    from { opacity: 1; transform: translateX(-50%) translateY(0); }
+    to { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  }
+`;
+document.head.appendChild(toastStyles);
+
+// Load saved theme on page load
+document.addEventListener('DOMContentLoaded', function() {
+  const settings = JSON.parse(localStorage.getItem('appSettings')) || { notifications: true, theme: 'dark' };
+  applyTheme(settings.theme);
+});
+
+// تحديث صورة الحساب عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', function() {
+  const profileData = JSON.parse(localStorage.getItem('profileData')) || {};
+  if (profileData.profilePic) {
+    const headerThumb = document.getElementById('headerAccountThumb');
+    if (headerThumb) {
+      headerThumb.src = profileData.profilePic;
+    }
+  }
+});
+// ===== END ACCOUNT PANEL SYSTEM =====
+
+// ===== مراقبة إضافة كروت جديدة للأقسام =====
+(function watchForNewCards() {
+  const seenCards = new Set();
+
+  // اجمع الكروت الموجودة حالياً (لا نرسل إشعار لها)
+  function seedExisting() {
+    document.querySelectorAll('.card-wrapper, .horizontal-list .card, [href^="go:"], [href$=".html"]').forEach(el => {
+      const key = el.href || el.querySelector('a')?.href;
+      if (key) seenCards.add(key);
+    });
+  }
+
+  function scanCards() {
+    document.querySelectorAll('.horizontal-list .card-wrapper, .horizontal-list a[href]').forEach(el => {
+      const link = el.href || el.querySelector('a')?.href;
+      const img = el.querySelector('img')?.src || '';
+      const titleEl = el.querySelector('.card-details-title, .card-title, [class*="title"]');
+      const title = titleEl?.textContent?.trim();
+      if (!link || !title || seenCards.has(link)) return;
+      seenCards.add(link);
+      const isSeries = link.includes('series') || link.includes('.html');
+      addNotification({ title, image: img, type: isSeries ? 'series' : 'movie', link });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    seedExisting();
+    updateBadge();
+    // راقب أي تغيير في DOM
+    const obs = new MutationObserver(() => scanCards());
+    obs.observe(document.body, { childList: true, subtree: true });
+  });
+
+  // للاختبار: أضف إشعاراً تجريبياً إذا لم يوجد شيء
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      if (getNotifs().length === 0) {
+        addNotification({
+          title: 'John Wick: Chapter 4',
+          image: 'https://image.tmdb.org/t/p/w92/sc2laKQHnDFZSA6fqxuQqJGEJ0W.jpg',
+          type: 'movie',
+          link: 'go:603692'
+        });
+        addNotification({
+          title: 'Dune: Part Two',
+          image: 'https://image.tmdb.org/t/p/w92/8b8R8l88Qje9dn9OE8PY05Nxl1X.jpg',
+          type: 'movie',
+          link: 'go:693134'
+        });
+      }
+    }, 500);
+  });
+})();
+// ===== END NOTIFICATION SYSTEM =====
+
 </script>
+
+<!-- ===== عرض المزيد - CSS ===== -->
+<style>
+/* ── زر عرض المزيد – نمط Netflix ── */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  margin-bottom: 10px;
+}
+.section-header .section-title {
+  margin-bottom: 0 !important;
+  padding: 0 !important;
+}
+
+/* الزر: نص + سهم بلون أحمر بدون خلفية (Netflix style) */
+.show-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: #e50914;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  transition: opacity 0.18s;
+  flex-shrink: 0;
+  position: relative;
+}
+/* خط سفلي متحرك */
+.show-more-btn::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 0; right: 0;
+  height: 1.5px;
+  background: #e50914;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.22s ease;
+}
+.show-more-btn:active { opacity: 0.7; }
+.show-more-btn:active::after { transform: scaleX(1); }
+/* السهم */
+.show-more-btn .sm-arrow {
+  display: inline-flex;
+  align-items: center;
+  transition: transform 0.22s ease;
+  font-size: 11px;
+  margin-top: 1px;
+}
+.show-more-btn:active .sm-arrow { transform: translateX(-3px); }
+
+/* ── Overlay ── */
+.acm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.82);
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease;
+}
+.acm-overlay.open { opacity: 1; pointer-events: all; }
+
+/* ── Bottom Sheet ── */
+.acm-panel {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: #141414;
+  border-radius: 18px 18px 0 0;
+  z-index: 10001;
+  height: 88vh;
+  transform: translateY(100%);
+  transition: transform 0.34s cubic-bezier(0.32,0,0.2,1);
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  will-change: transform;
+}
+.acm-panel.open { transform: translateY(0); }
+
+/* handle للسحب – فقط هذه المنطقة تغلق بالسحب */
+.acm-drag-zone {
+  flex-shrink: 0;
+  padding: 10px 0 4px;
+  cursor: grab;
+  display: flex;
+  justify-content: center;
+  touch-action: none; /* منع scroll هنا */
+}
+.acm-handle {
+  width: 36px; height: 4px;
+  background: rgba(255,255,255,0.22);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* Header */
+.acm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  flex-shrink: 0;
+}
+.acm-title {
+  font-size: 16px; font-weight: 700; color: #fff;
+  font-family: 'Tajawal', sans-serif;
+}
+.acm-badge {
+  font-size: 11px; color: #e50914;
+  background: rgba(229,9,20,0.12);
+  border: 1px solid rgba(229,9,20,0.3);
+  padding: 2px 9px; border-radius: 20px; font-weight: 700;
+  margin-right: 6px;
+}
+.acm-close {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: rgba(255,255,255,0.09); border: none;
+  color: #fff; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
+}
+.acm-close:active { background: rgba(255,255,255,0.2); }
+
+/* ── Grid: 3 كروت في كل صف بنفس نسبة الأصل ── */
+.acm-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 10px 24px;
+  overflow-y: auto;           /* التمرير هنا فقط */
+  flex: 1;
+  -webkit-overflow-scrolling: touch;
+  align-content: flex-start;
+  overscroll-behavior: contain; /* يمنع تمرير الصفحة الخلفية */
+  touch-action: pan-y;          /* السحب العمودي = scroll وليس إغلاق */
+}
+.acm-grid::-webkit-scrollbar { display: none; }
+
+/* كل كارت = عرض 120px تقريباً (ثلث الشاشة ناقص الـ gaps) */
+.acm-grid .card-wrapper {
+  width: calc((100% - 16px) / 3) !important;
+  flex-shrink: 0 !important;
+  scroll-snap-align: unset !important;
+  min-width: 0 !important;
+}
+
+/* الكارت نفسه */
+.acm-grid .card-wrapper .card {
+  width: 100% !important;
+  border-radius: 13px !important;
+  background-color: #1c1c1c !important;
+  overflow: hidden !important;
+  display: block !important;
+  position: relative !important;
+  text-decoration: none !important;
+}
+
+/* الصورة: نسبة 2:3 تماماً مثل poster (120×160) */
+.acm-grid .card-wrapper .card img {
+  width: 100% !important;
+  aspect-ratio: 2 / 3 !important;
+  height: auto !important;
+  object-fit: cover !important;
+  object-position: center top !important;
+  border-radius: 13px !important;
+  display: block !important;
+  filter: none !important;
+  opacity: 1 !important;
+  position: static !important;
+}
+
+/* تفاصيل الكارت */
+.acm-grid .card-wrapper .card-details {
+  margin-top: 5px !important;
+  text-align: center !important;
+}
+.acm-grid .card-wrapper .card-details-title {
+  font-size: 11px !important;
+  color: #fff !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  display: block !important;
+  margin-bottom: 3px !important;
+  padding: 0 2px !important;
+}
+.acm-grid .card-wrapper .card-details-meta {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 4px !important;
+  font-size: 10px !important;
+}
+.acm-grid .card-wrapper .card-details-meta .year { color: #aaa !important; }
+.acm-grid .card-wrapper .card-details-meta .rating {
+  display: flex !important; align-items: center !important; gap: 3px !important;
+}
+.acm-grid .card-wrapper .card-details-meta .rating img {
+  width: 22px !important;
+  height: auto !important;
+  object-fit: contain !important;
+  border-radius: 0 !important;
+  position: static !important;
+  filter: none !important;
+  opacity: 1 !important;
+  aspect-ratio: unset !important;
+}
+/* إخفاء overlay وعناصر السلايدر داخل الشبكة */
+.acm-grid .card-overlay,
+.acm-grid .movie-overlay,
+.acm-grid .slider-play-btn,
+.acm-grid .bottom-shade { display: none !important; }
+
+/* أنيميشن ظهور */
+@keyframes acmIn {
+  from { opacity:0; transform:scale(0.94) translateY(6px); }
+  to   { opacity:1; transform:scale(1) translateY(0); }
+}
+.acm-grid .card-wrapper { animation: acmIn 0.22s ease both; }
+</style>
+
+<!-- ===== عرض المزيد - HTML ===== -->
+<div class="acm-overlay" id="acmOverlay" onclick="acmClose()"></div>
+<div class="acm-panel" id="acmPanel">
+  <!-- منطقة السحب للإغلاق (فقط) -->
+  <div class="acm-drag-zone" id="acmDragZone">
+    <div class="acm-handle"></div>
+  </div>
+  <div class="acm-header">
+    <div style="display:flex;align-items:center;">
+      <span class="acm-title" id="acmTitle">جميع المحتوى</span>
+      <span class="acm-badge" id="acmBadge">0</span>
+    </div>
+    <button class="acm-close" onclick="acmClose()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <!-- التمرير فقط داخل هذا الـ div -->
+  <div class="acm-grid" id="acmGrid"></div>
+</div>
+
+<!-- ===== عرض المزيد - JavaScript ===== -->
+<script>
+(function() {
+
+  /* ── إضافة أزرار عرض المزيد ── */
+  function initShowMore() {
+    document.querySelectorAll('.section, .must-watch-section').forEach(section => {
+      if (section.classList.contains('ramadan-section-final')) return;
+
+      const cards = section.querySelectorAll('.card-wrapper');
+      if (cards.length < 4) return;
+
+      const titleEl = section.querySelector('h2.section-title, h3.section-title, .section-title');
+      if (!titleEl) return;
+      if (titleEl.dataset.smAdded) return;
+      titleEl.dataset.smAdded = '1';
+
+      const header = document.createElement('div');
+      header.className = 'section-header';
+      titleEl.parentNode.insertBefore(header, titleEl);
+      header.appendChild(titleEl);
+
+      const btn = document.createElement('button');
+      btn.className = 'show-more-btn';
+      btn.innerHTML = '<span>الكل</span><span class="sm-arrow"><i class="fa-solid fa-chevron-left"></i></span>';
+      btn._section = section;
+      btn._title   = titleEl.textContent.replace(/\s+/g,' ').trim();
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        acmOpen(this._section, this._title);
+      });
+      header.appendChild(btn);
+    });
+  }
+
+  /* ── فتح اللوحة ── */
+  window.acmOpen = function(section, title) {
+    const grid = document.getElementById('acmGrid');
+    grid.innerHTML = '';
+    grid.scrollTop = 0;
+
+    document.getElementById('acmTitle').textContent = title || 'جميع المحتوى';
+
+    const cards = section.querySelectorAll('.card-wrapper');
+    document.getElementById('acmBadge').textContent = cards.length;
+
+    cards.forEach((card, i) => {
+      const clone = card.cloneNode(true);
+      clone.removeAttribute('style');
+      clone.style.animationDelay = Math.min(i * 20, 350) + 'ms';
+      grid.appendChild(clone);
+    });
+
+    document.getElementById('acmOverlay').classList.add('open');
+    document.getElementById('acmPanel').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+
+  /* ── إغلاق اللوحة ── */
+  window.acmClose = function() {
+    document.getElementById('acmOverlay').classList.remove('open');
+    document.getElementById('acmPanel').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  /* ── سحب للإغلاق – فقط من منطقة الـ drag zone ──
+     النقطة الأساسية: لا نغلق إذا كان السحب من داخل acm-grid */
+  const dragZone = document.getElementById('acmDragZone');
+  if (dragZone) {
+    let sy = 0;
+    dragZone.addEventListener('touchstart', e => {
+      sy = e.touches[0].clientY;
+    }, {passive: true});
+    dragZone.addEventListener('touchend', e => {
+      if (e.changedTouches[0].clientY - sy > 50) acmClose();
+    }, {passive: true});
+  }
+
+  /* تشغيل */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initShowMore);
+  } else {
+    initShowMore();
+  }
+  setTimeout(initShowMore, 700);
+
+})();
+</script>
+
 </div></body>
 </html>
