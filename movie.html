@@ -706,6 +706,8 @@ fetch(`https://api.themoviedb.org/3/movie/${MOVIE_ID}/images?api_key=${API_KEY}`
     movieData.title = data.title;
     movieData.poster = `https://image.tmdb.org/t/p/original${data.poster_path}`;
     movieData.backdrop = `https://image.tmdb.org/t/p/original${data.backdrop_path}`;
+    movieData.year = data.release_date ? data.release_date.slice(0, 4) : '';
+    movieData.rating = data.vote_average ? data.vote_average.toFixed(1) : '0';
     
     // تحديث عنوان الفيديو في النافذة المنبثقة
     document.getElementById("videoTitle").textContent = data.title;
@@ -1730,6 +1732,8 @@ function addToWatchHistory() {
             id: movieData.id,
             title: movieData.title,
             poster: movieData.poster || movieData.backdrop,
+            year: movieData.year,
+            rating: movieData.rating,
             watchedAt: new Date().toISOString()
         };
         
