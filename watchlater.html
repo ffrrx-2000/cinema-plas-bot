@@ -79,43 +79,52 @@ body {
     padding: 16px;
 }
 
-.item-card {
+.card-wrapper {
     position: relative;
-    border-radius: 12px;
-    overflow: hidden;
-    background: #1c1c1c;
-    text-decoration: none;
-    display: block;
 }
 
-.item-card img {
+.card {
+    display: block;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    text-decoration: none;
+}
+
+.card img {
     width: 100%;
     aspect-ratio: 2/3;
     object-fit: cover;
     display: block;
+    background: #1c1c1c;
 }
 
-.item-card .card-overlay {
+.card-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%);
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
     display: flex;
-    align-items: flex-end;
-    padding: 10px 8px;
+    align-items: center;
+    justify-content: center;
     opacity: 0;
     transition: opacity 0.2s;
 }
 
-.item-card:active .card-overlay {
+.card:active .card-overlay {
     opacity: 1;
 }
 
-.item-info {
-    width: 100%;
+.play-icon {
+    font-size: 32px;
+    color: #fff;
 }
 
-.item-title {
-    font-size: 11px;
+.card-details {
+    padding: 8px 4px;
+}
+
+.card-details-title {
+    font-size: 12px;
     font-weight: 600;
     color: #fff;
     white-space: nowrap;
@@ -124,12 +133,32 @@ body {
     margin-bottom: 4px;
 }
 
-.item-meta {
+.card-details-meta {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 10px;
+    gap: 8px;
+    font-size: 11px;
     color: rgba(255,255,255,0.6);
+}
+
+.card-details-meta .year {
+    color: rgba(255,255,255,0.5);
+}
+
+.card-details-meta .rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.card-details-meta .rating img {
+    width: 28px;
+    height: auto;
+}
+
+.card-details-meta .rating span {
+    color: #f5c518;
+    font-weight: 600;
 }
 
 /* Remove button */
@@ -153,13 +182,9 @@ body {
     z-index: 10;
 }
 
-.item-card:active .remove-btn,
-.item-card:hover .remove-btn {
+.card-wrapper:active .remove-btn,
+.card-wrapper:hover .remove-btn {
     opacity: 1;
-}
-
-.remove-btn:active {
-    background: var(--accent-color);
 }
 
 /* Empty state */
@@ -248,16 +273,24 @@ function loadWatchLater() {
     
     watchLater.forEach((item, index) => {
         const card = document.createElement('div');
-        card.className = 'item-card';
+        card.className = 'card-wrapper';
         card.innerHTML = `
-            <a href="movie.html?tmdb=${item.id}">
+            <a class="card" href="movie.html?tmdb=${item.id}">
                 <img src="${item.poster || 'https://via.placeholder.com/200x300/1c1c1c/666?text=No+Image'}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/200x300/1c1c1c/666?text=No+Image'">
                 <div class="card-overlay">
-                    <div class="item-info">
-                        <div class="item-title">${item.title || 'بدون عنوان'}</div>
-                    </div>
+                    <i class="fas fa-play play-icon"></i>
                 </div>
             </a>
+            <div class="card-details">
+                <h3 class="card-details-title">${item.title || 'بدون عنوان'}</h3>
+                <div class="card-details-meta">
+                    <span class="year">${item.year || ''}</span>
+                    ${item.rating ? `<div class="rating">
+                        <img alt="IMDb" src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg">
+                        <span>${item.rating}</span>
+                    </div>` : ''}
+                </div>
+            </div>
             <button class="remove-btn" onclick="removeItem(${index}, event)">
                 <i class="fa-solid fa-xmark"></i>
             </button>
