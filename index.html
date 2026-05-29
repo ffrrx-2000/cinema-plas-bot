@@ -9489,12 +9489,12 @@ function closeAccountPanel() {
 function updateAccountStats() {
   const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
   const watchLater = JSON.parse(localStorage.getItem('watchLater')) || [];
-  const watched = JSON.parse(localStorage.getItem('watchedHistory')) || [];
+  const watched = JSON.parse(localStorage.getItem('watchHistory')) || [];
   
   document.getElementById('favoritesCount').textContent = favorites.length;
   document.getElementById('watchLaterCount').textContent = watchLater.length;
   document.getElementById('watchedCount').textContent = watched.length;
-}
+  }
 
 function loadProfileData() {
   const profileData = JSON.parse(localStorage.getItem('profileData')) || {};
